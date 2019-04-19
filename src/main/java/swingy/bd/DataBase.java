@@ -1,14 +1,12 @@
 package swingy.bd;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import swingy.mvc.models.heroBuilder.DirectorHero;
 import swingy.mvc.models.Character;
 
-public class DataBase
-{
+public class DataBase {
     private static DataBase db = null;
 
     private static Statement    statm;
@@ -24,16 +22,17 @@ public class DataBase
     }
 
     public static DataBase  getDb() {
-        if (db == null)
+        if (db == null) {
             db = new DataBase();
+        }
 
         return db;
     }
 
-    public void   connectDb() throws Exception {
-        if (this.connection == null) {
-            Class.forName(this.driverName);
-            this.connection = DriverManager.getConnection(this.connectionString);
+    public void connectDb() throws Exception {
+        if (connection == null) {
+            Class.forName(driverName);
+            connection = DriverManager.getConnection(connectionString);
 
             statm = this.connection.createStatement();
             statm.execute("CREATE  TABLE if not EXISTS 'heroes' ('name' text, 'type' text, 'level' INT, 'exp' INT," +
@@ -43,16 +42,13 @@ public class DataBase
 
     public List<String> getNames() throws Exception {
         info = statm.executeQuery("SELECT * FROM heroes");
-        List<String> names = new ArrayList<>();
-        names = (List<String>) info.getArray("name").getArray();
-//        while (info.next()) {
+        //        while (info.next()) {
 //            names.add(info.getString("name"));
 //        }
-        return names;
+        return (List<String>) info.getArray("name").getArray();
     }
 
-    public void addNewCharacter(Character newHero) throws Exception
-    {
+    public void addNewCharacter(Character newHero) throws Exception {
         String artifactType = newHero.getArtifact() == null ? "" : newHero.getArtifact().getType();
         int    artifactValue = artifactType == "" ? 0 : newHero.getArtifact().getValue();
 
@@ -63,20 +59,16 @@ public class DataBase
         statm.execute("INSERT INTO 'heroes' ('name', 'type', 'level', 'exp', 'attack', 'defense', 'hp', 'maxHP', 'artifactT', 'artifactV')" + requestAdd );
     }
 
-    public void        remove(String name) throws Exception
-    {
+    public void remove(String name) throws Exception {
         statm.execute("DELETE FROM heroes WHERE name = '" + name + "';");
     }
 
-    public Character getHero(String name) throws Exception
-    {
+    public Character getHero(String name) throws Exception {
         info = statm.executeQuery("SELECT * FROM heroes where name = '" + name + "';");
-
         return info.next() ? new DirectorHero().buildByInfo(info) : null;
     }
 
-    public void         updateHero(Character hero)
-    {
+    public void updateHero(Character hero) {
         String request = "UPDATE heroes SET level = " + hero.getLevel() + ", exp = " + hero.getExp() +
                 ", attack = " + hero.getAttack() + ", defense = " + hero.getDefense() + ", hp = " + hero.getMaxHp() +
                 ", maxHp = " + hero.getMaxHp() + ", artifactT = '" + ( hero.getArtifact() == null ? "" : hero.getArtifact().getType() ) +

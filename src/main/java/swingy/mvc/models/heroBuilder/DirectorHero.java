@@ -8,30 +8,28 @@ import java.sql.ResultSet;
 import java.util.Set;
 import java.util.logging.Level;
 
-public class DirectorHero
-{
-    public DirectorHero()
-    {
-        this.builder = null;
+public class DirectorHero {
+
+    private IBuilder builder;
+
+    public DirectorHero() {
+
     }
 
-    public Character buildbyType(String type)
-    {
+    public Character buildByType(String type) {
         Character newHero = new Character();
 
-        switch (type)
-        {
-            case "Human": this.builder = new HumanBuilder(); break;
-            case "Ork":   this.builder = new OrkBuilder();   break;
-            case "Elf":   this.builder = new ElfBuilder();   break;
+        switch (type) {
+            case "Human": builder = new HumanBuilder(); break;
+            case "Ork":   builder = new OrkBuilder();   break;
+            case "Elf":   builder = new ElfBuilder();   break;
         }
-        this.builder.buildDefaultStats(newHero);
+        builder.buildDefaultStats(newHero);
 
         return newHero;
     }
 
-    public String setName(Character hero, String newName)
-    {
+    public String setName(Character hero, String newName) {
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
 
         hero.setName(newName);
@@ -46,8 +44,7 @@ public class DirectorHero
         return null;
     }
 
-    public Character buildByInfo(ResultSet info) throws Exception
-    {
+    public Character buildByInfo(ResultSet info) throws Exception {
         Character newHero = new Character();
 
         newHero.setName(info.getString("name"));
@@ -63,5 +60,4 @@ public class DirectorHero
         return newHero;
     }
 
-    private IBuilder builder;
 }

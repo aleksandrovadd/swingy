@@ -34,11 +34,10 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public void drawGameObjects()
-    {
-        this.drawMap();
+    public void drawGameObjects() {
+        drawMap();
         System.out.println("\n0) Exit\n\n     1) North\n2) West     3) East\n     4) South\n\"gui\" - for gui-mode");
-        controller.keyPressed( this.getNiceValue() );
+        controller.keyPressed(getNiceValue());
     }
 
     @Override
@@ -47,14 +46,14 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public boolean simpleDialog(String message)
-    {
+    public boolean simpleDialog(String message) {
         System.out.println(message + "\n 1) Yes     2) No");
 
         int key;
 
-        while ( ( key = this.getNiceValue() ) != 38 && key != 37 )
+        while ((key = getNiceValue()) != 38 && key != 37) {
             System.err.println("Unknown value.");
+        }
 
         return (key == 38);
     }
@@ -71,7 +70,7 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public String get_Type() { return this.type; }
+    public String getViewType() { return this.type; }
 
     @Override
     public void   close()
@@ -139,15 +138,13 @@ public class ConsoleView implements IView
         return value;
     }
 
-    private String  getStat(int numStat)
-    {
+    private String  getStat(int numStat) {
         if (numStat > 9)
             return "";
 
         String stat = "       ";
 
-        switch (numStat)
-        {
+        switch (numStat) {
             case 0: stat += "Name: " + controller.getCharacter().getName();          break;
             case 1: stat += "Type: " + controller.getCharacter().getType();          break;
             case 2: stat += "Level: " + controller.getCharacter().getLevel();        break;

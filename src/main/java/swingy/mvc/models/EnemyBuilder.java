@@ -13,12 +13,15 @@ public class EnemyBuilder {
         while (position.x == -1) {
             position.setLocation(rand.nextInt(sizeMap), rand.nextInt(sizeMap));
 
-            if (position.equals(hero.getPosition()))
+            if (position.equals(hero.getPosition())) {
                 position.x = -1;
+            }
 
-            for (Enemy enemy : enemies)
-                if (enemy.getPosition().equals(position))
+            for (Enemy enemy : enemies) {
+                if (enemy.getPosition().equals(position)) {
                     position.x = -1;
+                }
+            }
         }
         newEnemy.setPosition(position);
         setSkills(newEnemy, rand, hero.getLevel() << 1);

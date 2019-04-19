@@ -7,24 +7,17 @@ import swingy.mvc.models.Character;
 import java.util.List;
 import java.util.Scanner;
 
+import static swingy.util.Constants.*;
+
 public class ConsoleChooseHero {
-
-    final int SELECT = 1;
-    final int REMOVE = 2;
-    final int CANCEL = 3;
-
-    final int YES = 1;
-    final int NO = 2;
 
     private DirectorHero builder;
     private List<String> names;
     private Character hero;
-    private Scanner      scanner;
+    private Scanner scanner;
 
-    public ConsoleChooseHero(Scanner scanner)
-    {
-        this.builder = new DirectorHero();
-        this.hero = null;
+    public ConsoleChooseHero(Scanner scanner) {
+        builder = new DirectorHero();
         this.scanner = scanner;
     }
 
@@ -36,20 +29,24 @@ public class ConsoleChooseHero {
 
         while (hero == null) {
             System.out.println("0) Exit\n1) Select previous created hero\n2) Create new hero");
-            value = this.getValidValue();
-            switch (value)
-            {
-                case 0: System.exit(0);
-                case 1: this.oldHeroesManager();    break;
-                case 2: this.heroCreator();         break;
+            value = getValidValue();
+            switch (value) {
+                case EXIT:
+                    System.exit(0);
+                case CHOOSE_OLD_CHARACTER:
+                    oldHeroesManager();
+                    break;
+                case CHOOSE_CREATE_CHARACTER:
+                    heroCreator();
+                    break;
             }
         }
         return hero;
     }
 
-    private void    oldHeroesManager() throws Exception {
-        int          index;
-        int          value;
+    private void oldHeroesManager() throws Exception {
+        int index;
+        int value;
 
         while (true) {
             index = 0;
@@ -70,10 +67,8 @@ public class ConsoleChooseHero {
                 if (choice == SELECT) {
                     hero = DataBase.getDb().getHero(names.get(value - 1));
                 }
-                else if (choice == REMOVE)
-                {
-                    try
-                    {
+                else if (choice == REMOVE) {
+                    try {
                         DataBase.getDb().remove( names.get(value - 1) );
                         names.remove(value - 1);
                     }
@@ -81,35 +76,35 @@ public class ConsoleChooseHero {
                         e.printStackTrace();
                     }
                 }
-                if (choice == SELECT || choice == CANCEL)
+                if (choice == SELECT || choice == CANCEL) {
                     break;
-            }
-        }
-    }
-
-    private void    heroCreator()
-    {
-        int value;
-
-        while (true) {
-            System.out.println("0) come back\n1) Human\n2) Ork\n3) Elf");
-            if ((value = this.getValidValue()) == 0)
-                break;
-            if ((value > 0 && value < 4)) {
-                switch (value) {
-                    case 1: createNewCharacter("Human"); break;
-                    case 2: createNewCharacter("Ork");   break;
-                    case 3: createNewCharacter("Elf");   break;
                 }
             }
         }
     }
 
-    private void createNewCharacter(String type)
-    {
+    private void heroCreator() {
+        int value;
+
+        while (true) {
+            System.out.println("0) come back\n1) Human\n2) Ork\n3) Elf");
+            if ((value = getValidValue()) == 0) {
+                break;
+            }
+            if ((value > 0 && value < 4)) {
+                switch (value) {
+                    case HUMAN: createNewCharacter("Human"); break;
+                    case ORC: createNewCharacter("Ork");   break;
+                    case ELF: createNewCharacter("Elf");   break;
+                }
+            }
+        }
+    }
+
+    private void createNewCharacter(String type) {
         String characterName = "";
         String error = "";
-        Character newCharacter = builder.buildbyType(type);
+        Character newCharacter = builder.buildByType(type);
         System.out.println(newCharacter.getInfo() + "\nCreate character?  1) Yes   2) No");
         int value = getValidValue();
         if (value == YES) {

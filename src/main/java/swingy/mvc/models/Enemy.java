@@ -2,8 +2,7 @@ package swingy.mvc.models;
 
 import java.awt.*;
 
-public class Enemy
-{
+public class Enemy {
     private int   hp;
     private int   attack;
     private int   defense;

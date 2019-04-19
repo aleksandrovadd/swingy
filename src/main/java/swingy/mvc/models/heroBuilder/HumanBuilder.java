@@ -2,10 +2,8 @@ package swingy.mvc.models.heroBuilder;
 
 import swingy.mvc.models.Character;
 
-public class HumanBuilder implements IBuilder
-{
-    public void buildDefaultStats(Character hero)
-    {
+public class HumanBuilder implements IBuilder {
+    public void buildDefaultStats(Character hero) {
         hero.setType("human");
         hero.setLevel(1);
         hero.setExp(0);

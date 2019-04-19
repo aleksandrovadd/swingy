@@ -28,39 +28,43 @@ public class Character {
         this.artifact = null;
     }
 
-    public String   getInfo() {
+    public String getInfo() {
         return ("\n Type: " + type + "\n\n Level: " + level + "\n\n Exp: " + exp
         + "\n\n Attack: " + attack + "\n\n Defense: " + defense + "\n\n Hit points: " + hitP);
     }
 
-    public void     move(int x, int y) {
+    public void move(int x, int y) {
         this.oldPosition.setLocation(this.position.x, this.position.y);
         this.position.setLocation(this.position.x + x, this.position.y + y);
     }
 
-    public int      getNeccesaryExp() {
+    public int getNeccesaryExp() {
         return (int)(level * 1000 + Math.pow(level - 1, 2) * 450);
     }
 
-    public void     setHitP(int hp) {
-        if (hp < 0)
+    public void setHitP(int hp) {
+        if (hp < 0) {
             hitP = 0;
-        else if (hp > maxHp)
+        }
+        else if (hp > maxHp) {
             hitP = maxHp;
-        else
+        } else {
             hitP = hp;
+        }
     }
 
     public int      getFinalAttack() {
-        if ( artifact != null && artifact.getType().equals("attack") )
-            return ( (attack + artifact.getValue()) << 2 );
+        if (artifact != null && artifact.getType().equals("attack")) {
+            return ((attack + artifact.getValue()) << 2);
+        }
 
         return (attack << 2);
     }
 
     public int      getFinalDefense() {
-        if ( artifact != null && artifact.getType().equals("defense") )
-            return ( defense + artifact.getValue() );
+        if (artifact != null && artifact.getType().equals("defense")) {
+            return (defense + artifact.getValue());
+        }
 
         return defense;
     }

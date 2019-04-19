@@ -3,8 +3,7 @@ package swingy.mvc.models.heroBuilder;
 import swingy.mvc.models.Character;
 
 public class OrkBuilder implements IBuilder {
-    public void buildDefaultStats(Character hero)
-    {
+    public void buildDefaultStats(Character hero) {
         hero.setType("ork");
         hero.setLevel(1);
         hero.setExp(0);

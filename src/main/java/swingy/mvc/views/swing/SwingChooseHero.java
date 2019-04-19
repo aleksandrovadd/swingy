@@ -110,7 +110,7 @@ public class SwingChooseHero
         this.heroTypes.addItemListener (
                 (ItemEvent e) ->
                 {
-                    this.stats.setCharacter(builder.buildbyType( (String)heroTypes.getSelectedItem() ));
+                    this.stats.setCharacter(builder.buildByType( (String)heroTypes.getSelectedItem() ));
                     this.stats.updateData();
                 }
         );
@@ -128,7 +128,7 @@ public class SwingChooseHero
                     {
                         Character newHero = DataBase.getDb().getHero( (String)oldHeroes.getSelectedItem() );
                         if (newHero == null)
-                            newHero = builder.buildbyType( (String)heroTypes.getSelectedItem() );
+                            newHero = builder.buildByType( (String)heroTypes.getSelectedItem() );
 
                         this.stats.setCharacter(newHero);
                         this.stats.updateData();
@@ -140,7 +140,7 @@ public class SwingChooseHero
         );
 
         this.stats = new SwingStats( names.size() != 0 ? DataBase.getDb().getHero((String)oldHeroes.getSelectedItem()) :
-                builder.buildbyType((String)heroTypes.getSelectedItem()) );
+                builder.buildByType((String)heroTypes.getSelectedItem()) );
         this.stats.setLocation(400, 400);
     }
 
@@ -212,7 +212,7 @@ public class SwingChooseHero
 
     private void    tryCreateNewHero()
     {
-        Character newHero = builder.buildbyType( (String)this.heroTypes.getSelectedItem() );
+        Character newHero = builder.buildByType( (String)this.heroTypes.getSelectedItem() );
         String error = builder.setName(newHero, this.inputName.getText() );
 
         for (int i = 0; i < this.oldHeroes.getItemCount(); i++)
