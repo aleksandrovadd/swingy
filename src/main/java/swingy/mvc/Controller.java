@@ -162,12 +162,12 @@ public class Controller {
             currentGui.addLog("Critical hit!!!");
         }
         else {
-            character.setHitP( character.getHitP() - (monster.getAttack() << 2) + character.getFinalDefense() );
+            character.setHitP(character.getHitP() - (monster.getAttack()) + character.getFinalDefense());
             if (checkDeath()) {
                 return;
             }
             monster.setHp( monster.getHp() - character.getFinalAttack() + monster.getDefense());
-            int raisedDamage = (monster.getAttack() << 2) - character.getFinalDefense();
+            int raisedDamage = (monster.getAttack()) - character.getFinalDefense();
             currentGui.addLog("You caused " + (character.getFinalAttack() - monster.getDefense())
                     + " damage to the monster !\n" + (raisedDamage < 0 ? " Blocked up all damage" : " Raised " + raisedDamage ) + " damage.");
         }
@@ -178,8 +178,8 @@ public class Controller {
             currentGui.addLog("Level up ! Skills increased!");
             character.setMaxHp( character.getMaxHp() + (4 << character.getLevel()) );
             character.setHitP( character.getMaxHp() );
-            character.setAttack( character.getAttack() + (character.getLevel() << 2) );
-            character.setDefense( character.getDefense() + (character.getLevel() << 1) );
+            character.setAttack( character.getAttack() + (character.getLevel() << 2) * 4);
+            character.setDefense( character.getDefense() + (character.getLevel() << 1) * 4);
             character.setLevel( character.getLevel() + 1 );
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
             this.updateMonsters();
@@ -204,7 +204,7 @@ public class Controller {
     private void manageBonuses(Monster monster) {
         if (rand.nextInt(3) == 2) {
             if (rand.nextInt(2) == 0) {
-                int up = rand.nextInt(40) + 10;
+                int up = rand.nextInt(80) + 10;
                 character.setHitP(character.getHitP() + up);
                 currentGui.addLog("Health elixir was found + " + up + " hp!");
             }

@@ -53,7 +53,7 @@ public class CharacterBuilder {
         newCharacter.setName(info.getString("name"));
         newCharacter.setType(info.getString("type"));
         newCharacter.setArtifact( new Artifact(info.getString("artifactT"), info.getInt("artifactV")) );
-        newCharacter.setAttack(info.getInt("attack") );
+        newCharacter.setAttack(info.getInt(ATTACK_STR) );
         newCharacter.setDefense(info.getInt(DEFENSE_STR));
         newCharacter.setExp(info.getInt("exp"));
         newCharacter.setLevel(info.getInt("level"));
