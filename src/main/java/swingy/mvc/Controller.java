@@ -162,12 +162,12 @@ public class Controller {
             currentGui.addLog("Critical hit!!!");
         }
         else {
-            character.setHitP(character.getHitP() - (monster.getAttack()) + character.getFinalDefense());
+            character.setHitP(character.getHitP() - (monster.getAttack() << 2) + character.getFinalDefense());
             if (checkDeath()) {
                 return;
             }
             monster.setHp( monster.getHp() - character.getFinalAttack() + monster.getDefense());
-            int raisedDamage = (monster.getAttack()) - character.getFinalDefense();
+            int raisedDamage = (monster.getAttack() << 2) - character.getFinalDefense();
             currentGui.addLog("You caused " + (character.getFinalAttack() - monster.getDefense())
                     + " damage to the monster !\n" + (raisedDamage < 0 ? " Blocked up all damage" : " Raised " + raisedDamage ) + " damage.");
         }
@@ -178,8 +178,8 @@ public class Controller {
             currentGui.addLog("Level up ! Skills increased!");
             character.setMaxHp( character.getMaxHp() + (4 << character.getLevel()) );
             character.setHitP( character.getMaxHp() );
-            character.setAttack( character.getAttack() + (character.getLevel() << 2) * 4);
-            character.setDefense( character.getDefense() + (character.getLevel() << 1) * 4);
+            character.setAttack( character.getAttack() + (character.getLevel() << 2));
+            character.setDefense( character.getDefense() + (character.getLevel() << 1));
             character.setLevel( character.getLevel() + 1 );
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
             this.updateMonsters();

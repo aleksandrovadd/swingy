@@ -24,15 +24,19 @@ public class MonsterBuilder {
             }
         }
         newMonster.setPosition(position);
-        setSkills(newMonster, rand, character.getLevel());
+        setSkills(newMonster, rand, character.getLevel() << 1);
 
         return newMonster;
     }
 
     private void    setSkills(Monster newMonster, Random rand, int coefficient) {
-        coefficient = coefficient == 2 ? 1 : coefficient;
+//        coefficient = coefficient == 2 ? 1 : coefficient;
 
-        newMonster.setAttack((rand.nextInt(15) + 10) * coefficient);
+        coefficient = (int) (coefficient * 0.5);
+        if (coefficient <= 0)
+            coefficient = 1;
+
+        newMonster.setAttack((rand.nextInt(20) + 10) * coefficient);
         newMonster.setDefense((rand.nextInt(15) + 10) * coefficient);
         newMonster.setHp((rand.nextInt(150) + 75) + 10 * coefficient);
         newMonster.setNumImg(rand.nextInt(7));
