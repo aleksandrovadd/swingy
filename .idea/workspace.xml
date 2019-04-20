@@ -2,24 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cd9953bd-d7f6-4d21-b482-bbee0b339887" name="Default Changelist" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_projectlombok_lombok_1_14_4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/fonts/font.otf" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/fonts/font.ttf" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/fonts/font2.ttf" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/fonts/font3.ttf" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/screenshots/scr1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/screenshots/scr2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/screenshots/scr3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/screenshots/scr4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/screenshots/scr5.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/screenshots/scr6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/heroes.db" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/swingy/mvc/Controller.java" afterPath="$PROJECT_DIR$/src/main/java/swingy/mvc/Controller.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/swingy/mvc/models/Monster.java" afterPath="$PROJECT_DIR$/src/main/java/swingy/mvc/models/Monster.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/swingy/mvc/models/MonsterBuilder.java" afterPath="$PROJECT_DIR$/src/main/java/swingy/mvc/models/MonsterBuilder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/swingy/mvc/models/characterBuilder/CharacterBuilder.java" afterPath="$PROJECT_DIR$/src/main/java/swingy/mvc/models/characterBuilder/CharacterBuilder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swingy.iml" afterPath="$PROJECT_DIR$/swingy.iml" />
     </list>
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -844,12 +828,12 @@
       <workItem from="1555614276918" duration="2375000" />
       <workItem from="1555691505645" duration="170000" />
       <workItem from="1555691697354" duration="22263000" />
-      <workItem from="1555765442316" duration="9447000" />
+      <workItem from="1555765442316" duration="9521000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="34350000" />
+    <option name="totallyTimeSpent" value="34424000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
