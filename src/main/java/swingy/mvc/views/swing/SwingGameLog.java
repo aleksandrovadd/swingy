@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class SwingGameLog extends JTextArea
 {
-    private Font    font;
+    private Font font;
 
     public SwingGameLog() {
         this.font = null;
@@ -20,9 +20,9 @@ public class SwingGameLog extends JTextArea
         this.setFocusable(false);
     }
 
-    private void    loadFont() {
+    private void loadFont() {
         try {
-            File file = new File("../../../resources/fonts/font.otf");
+            File file = new File("resources/fonts/RobotoCondensed-Italic.ttf");
             this.font = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(18f);
         } catch (FontFormatException e) {
             e.printStackTrace();
@@ -39,6 +39,6 @@ public class SwingGameLog extends JTextArea
         }
 
         super.append(str);
-        this.setRows(getRows() + 1);
+        setRows(getRows() + 1);
     }
 }

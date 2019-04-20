@@ -14,6 +14,7 @@ import java.util.List;
 
 import swingy.mvc.models.characterBuilder.*;
 import swingy.mvc.models.Character;
+import swingy.util.Constants;
 
 import static swingy.util.Constants.*;
 
@@ -30,33 +31,29 @@ public class SwingChooseCharacter {
     private Map<String, JButton>    buttons;
     private Font[]                  fonts;
 
-    /********************* Constructor **********************/
-
     public SwingChooseCharacter(SwingPanel panel) {
         this.panel = panel;
         this.inputName = new JTextField("", 5);
 
         String[] nameTypes = {WARRIOR_TYPE, MAGE_TYPE, ROGUE_TYPE};
 
-        this.characterTypes = new JComboBox(nameTypes);
-        this.previousCharacters = new JComboBox();
+        this.characterTypes = new JComboBox<>(nameTypes);
+        this.previousCharacters = new JComboBox<>();
         this.builder = new CharacterBuilder();
 
         this.labels = new HashMap<>();
         labels.put(NAME, new JLabel("Name:"));
-        labels.put(OLD, new JLabel("Previous saved characters:"));
+        labels.put(OLD, new JLabel("Previously saved characters:"));
 
         this.buttons = new HashMap<>();
         buttons.put(CREATE, new JButton("Create new character"));
-        buttons.put(SELECT_STR, new JButton("Select"));
-        buttons.put(REMOVE_STR, new JButton("Remove"));
+        buttons.put(SELECT_STR, new JButton(Constants.SELECT_STR));
+        buttons.put(REMOVE_STR, new JButton(Constants.REMOVE_STR));
 
         this.fonts = new Font[2];
     }
 
-    /***************** Public Method *********************/
-
-    public Character Choosecharacter() throws Exception {
+    public Character ChooseCharacter() throws Exception {
         DataBase.getDb().connectDb();
 
         this.prepareObjects();
@@ -71,9 +68,6 @@ public class SwingChooseCharacter {
 
         return this.selectedCharacter;
     }
-
-
-    /************* Preparing Objects to painting *******************/
 
     private void    prepareObjects() throws Exception {
         this.loadFonts();
@@ -109,22 +103,20 @@ public class SwingChooseCharacter {
                 }
         );
 
-        /* Box old characters */
-
         List<String> names = DataBase.getDb().getNames();
         for (String name : names) {
-            this.previousCharacters.addItem(name);
+            previousCharacters.addItem(name);
         }
-        this.previousCharacters.setLocation(100, 175);
-        this.previousCharacters.setSize(160, 50);
-        this.previousCharacters.addItemListener(
+        previousCharacters.setLocation(100, 175);
+        previousCharacters.setSize(160, 50);
+        previousCharacters.addItemListener(
                 (ItemEvent e) -> {
                     try {
-                        Character newcharacter = DataBase.getDb().getCharacter( (String) previousCharacters.getSelectedItem() );
-                        if (newcharacter == null)
-                            newcharacter = builder.buildByType( (String) characterTypes.getSelectedItem() );
+                        Character newCharacter = DataBase.getDb().getCharacter( (String) previousCharacters.getSelectedItem() );
+                        if (newCharacter == null)
+                            newCharacter = builder.buildByType( (String) characterTypes.getSelectedItem() );
 
-                        this.stats.setCharacter(newcharacter);
+                        this.stats.setCharacter(newCharacter);
                         this.stats.updateData();
                     }
                     catch (Exception e1) {
@@ -147,8 +139,8 @@ public class SwingChooseCharacter {
         buttons.get(SELECT_STR).setLocation(75, 250);
         buttons.get(SELECT_STR).setSize(100, 25);
         buttons.get(SELECT_STR).addActionListener( (ActionEvent e) -> {
-            if ( this.previousCharacters.getItemCount() == 0 ) {
-                JOptionPane.showMessageDialog(this.panel, "You haven't any character, create him");
+            if (this.previousCharacters.getItemCount() == 0 ) {
+                JOptionPane.showMessageDialog(this.panel, "You do not have any character, create him.");
             }
             else {
                 this.selectCharacter();
@@ -188,18 +180,16 @@ public class SwingChooseCharacter {
     }
 
     private void    loadFonts() {
+        File file = new File("resources/fonts/LeagueGothic-CondensedItalic.otf");
+//        File file1 = new File("resources/fonts/font3.ttf");
         try {
-            File file = new File("../resources/fonts/font2.ttf");
-            this.fonts[0] = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(20f);
-            this.fonts[1] = Font.createFont(Font.TRUETYPE_FONT, new File("../resources/fonts/font3.ttf")).deriveFont(20f);
-        } catch (FontFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            this.fonts[0] = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(30f);
+//            this.fonts[1] = Font.createFont(Font.TRUETYPE_FONT, file1).deriveFont(20f);
+
+        } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
     }
-
-    /********* Character Management ***********/
 
     private void createNewCharacter() {
         Character newCharacter = builder.buildByType((String)characterTypes.getSelectedItem() );
@@ -226,7 +216,6 @@ public class SwingChooseCharacter {
 
     private void removeCharacter() {
         Object removeCharacter = previousCharacters.getSelectedItem();
-
         try {
             DataBase.getDb().remove((String)removeCharacter);
             previousCharacters.removeItem(removeCharacter);
@@ -238,7 +227,7 @@ public class SwingChooseCharacter {
 
     private void selectCharacter() {
         try {
-            this.selectedCharacter = DataBase.getDb().getCharacter( (String)this.previousCharacters.getSelectedItem() );
+            this.selectedCharacter = DataBase.getDb().getCharacter((String)this.previousCharacters.getSelectedItem());
         } catch (Exception e1) {
             e1.printStackTrace();
         }

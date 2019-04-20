@@ -57,7 +57,7 @@ public class SwingView extends JFrame implements IView
 
     @Override
     public void ChooseCharacter() throws Exception {
-        controller.setCharacter(new SwingChooseCharacter(panel).Choosecharacter());
+        controller.setCharacter(new SwingChooseCharacter(panel).ChooseCharacter());
     }
 
     @Override

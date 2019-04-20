@@ -9,8 +9,8 @@ import swingy.mvc.models.Monster;
 
 public class SwingMapPanel extends JPanel
 {
-    private Controller  controller;
-    private int         sizeSquare;
+    private Controller controller;
+    private int sizeSquare;
 
     public SwingMapPanel(Controller controller, int sizeSquare) {
         this.controller = controller;
@@ -26,7 +26,7 @@ public class SwingMapPanel extends JPanel
         Graphics2D g2 = (Graphics2D)g;
 
         this.drawMap(g2);
-        this.drawHero(g2);
+        this.drawCharacter(g2);
         this.drawEnemies(g2);
     }
 
@@ -39,8 +39,8 @@ public class SwingMapPanel extends JPanel
         }
     }
 
-    private void drawHero(Graphics2D g2) {
-        Image img = getToolkit().getImage("../../../resources/characters/" + controller.getCharacter().getType() + ".png");
+    private void drawCharacter(Graphics2D g2) {
+        Image img = getToolkit().getImage("resources/characters/" + controller.getCharacter().getType() + ".png");
         prepareImage(img, this);
 
         g2.setColor(new Color(101, 255, 0, 75));
@@ -53,7 +53,7 @@ public class SwingMapPanel extends JPanel
         Image myimg;
 
         for (Monster monster : monsters) {
-            myimg = getToolkit().getImage("../../../resources/characters/monster" + monster.getNumImg() + ".png");
+            myimg = getToolkit().getImage("resources/characters/monster" + monster.getNumImg() + ".png");
 
             prepareImage(myimg, this);
             g2.drawImage(myimg, monster.getPosition().x * sizeSquare + (sizeSquare >> 2), monster.getPosition().y * sizeSquare, this);

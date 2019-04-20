@@ -20,7 +20,7 @@ public class SwingStats extends JPanel
     public SwingStats(Character character) {
         this.character = character;
         this.stats = new HashMap<>();
-        this.res = "../../../resources/icons/";
+        this.res = "resources/icons/";
 
         this.setLayout(null);
         this.setSize(325, 500);
@@ -143,13 +143,15 @@ public class SwingStats extends JPanel
 
     private void loadFont()
     {
+        File file = new File("resources/fonts/LeagueGothic-CondensedItalic.otf");
         try {
-            this.font = Font.createFont(Font.TRUETYPE_FONT, new File("../../../resources/fonts/font.ttf")).deriveFont(30f);
+            this.font = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(30f);
         } catch (FontFormatException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+//        this.font = new Font(Font.SERIF, Font.ITALIC, 40);
     }
 
     public void setCharacter(Character character) {
