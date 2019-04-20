@@ -2,6 +2,7 @@ package swingy.mvc.views.swing;
 
 import swingy.mvc.Controller;
 import swingy.mvc.views.IView;
+import swingy.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,47 +27,41 @@ public class SwingView extends JFrame implements IView
 
     private String                  type;
 
-    /****************** Constructor *******************/
-
-    public SwingView(Controller controller)
-    {
+    public SwingView(Controller controller) {
         super("Swingy");
 
-        this.setBounds(500, 250, 1200, 1000);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setResizable(false);
-        this.setLayout(null);
-        this.addWindowListener(new WindowAdapter() {
+        setBounds(500, 250, 1200, 1000);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setLayout(null);
+        addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 if (controller.getCharacter() != null)
-                    controller.saveHero();
+                    controller.saveCharacter();
             }
         });
 
         this.controller = controller;
-        this.keySupporter = new KeySupporter();
-        this.setVisible(true);
-        this.setFocusable(true);
+        keySupporter = new KeySupporter();
+        setVisible(true);
+        setFocusable(true);
 
-        this.panel = new SwingPanel(controller);
-        this.squareSize = 70;
+        panel = new SwingPanel(controller);
+        squareSize = 70;
 
         setContentPane(panel);
 
-        this.type = "gui";
-        this.addKeyListener(this.keySupporter);
-    }
-
-    /***************** Implementing of Interface IView **********************/
-
-    @Override
-    public void ChooseHero() throws Exception {
-        this.controller.setCharacter(new SwingChooseHero(panel).ChooseHero());
+        type = Constants.GUI_STR;
+        addKeyListener(keySupporter);
     }
 
     @Override
-    public void drawGameObjects()
-    {
+    public void ChooseCharacter() throws Exception {
+        controller.setCharacter(new SwingChooseCharacter(panel).Choosecharacter());
+    }
+
+    @Override
+    public void drawGameObjects() {
         this.initScrolls();
         stats = new SwingStats(controller.getCharacter());
         stats.updateData();
@@ -86,22 +81,20 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public void   addLog(String text)
-    {
+    public void   addLog(String text) {
         gameLog.append(" " + text + "\n");
         this.scrollGameLog.getViewport().setViewPosition( new Point( scrollGameLog.getViewport().getViewPosition().x,
                 scrollGameLog.getViewport().getViewPosition().y + 30) );
     }
 
     @Override
-    public void     scrollPositionManager()
-    {
+    public void     scrollPositionManager() {
         Point newPosition = new Point(controller.getCharacter().getPosition().x * squareSize - 275,
                 controller.getCharacter().getPosition().y * squareSize - 275);
 
         newPosition.y = newPosition.y <= 0 ? scrollMap.getViewport().getViewPosition().y : newPosition.y;
         newPosition.x = newPosition.x <= 0 ? scrollMap.getViewport().getViewPosition().x : newPosition.x;
-        this.scrollMap.getViewport().setViewPosition(newPosition);
+        scrollMap.getViewport().setViewPosition(newPosition);
     }
 
     @Override
@@ -113,21 +106,19 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public void     updateData()
+    public void updateData()
     {
-        this.stats.updateData();
+        stats.updateData();
     }
 
     @Override
-    public String get_Type() { return this.type; }
+    public String getViewType() { return type; }
 
     @Override
     public void   close() {
         setVisible(false);
         dispose();
     }
-
-    /************** Private Methods and classes ********************/
 
     private void   initScrolls() {
         this.map = new SwingMapPanel(this.controller, this.squareSize);

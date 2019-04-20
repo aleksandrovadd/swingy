@@ -5,15 +5,14 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import swingy.mvc.Controller;
-import swingy.mvc.models.Enemy;
+import swingy.mvc.models.Monster;
 
 public class SwingMapPanel extends JPanel
 {
     private Controller  controller;
     private int         sizeSquare;
 
-    public SwingMapPanel(Controller controller, int sizeSquare)
-    {
+    public SwingMapPanel(Controller controller, int sizeSquare) {
         this.controller = controller;
         this.sizeSquare = sizeSquare;
         this.setLayout(null);
@@ -21,8 +20,7 @@ public class SwingMapPanel extends JPanel
     }
 
     @Override
-    public void  paint(Graphics g)
-    {
+    public void  paint(Graphics g) {
         super.paint(g);
 
         Graphics2D g2 = (Graphics2D)g;
@@ -32,10 +30,8 @@ public class SwingMapPanel extends JPanel
         this.drawEnemies(g2);
     }
 
-    private void drawMap(Graphics2D g2)
-    {
+    private void drawMap(Graphics2D g2) {
         this.setPreferredSize( new Dimension(sizeSquare * controller.getSizeMap(), sizeSquare * controller.getSizeMap()) );
-
         for (int i = 0; i < controller.getSizeMap(); i++) {
             for (int j = 0; j < controller.getSizeMap(); j++) {
                 g2.drawRect(sizeSquare * j, sizeSquare * i, sizeSquare, sizeSquare);
@@ -43,9 +39,8 @@ public class SwingMapPanel extends JPanel
         }
     }
 
-    private void drawHero(Graphics2D g2)
-    {
-        Image img = getToolkit().getImage("../resources/characters/" + controller.getCharacter().getType() + ".png");
+    private void drawHero(Graphics2D g2) {
+        Image img = getToolkit().getImage("../../../resources/characters/" + controller.getCharacter().getType() + ".png");
         prepareImage(img, this);
 
         g2.setColor(new Color(101, 255, 0, 75));
@@ -53,17 +48,15 @@ public class SwingMapPanel extends JPanel
         g2.drawImage(img, controller.getCharacter().getPosition().x * sizeSquare + (sizeSquare >> 2), controller.getCharacter().getPosition().y * sizeSquare, this);
     }
 
-    private void drawEnemies(Graphics2D g2)
-    {
-        ArrayList<Enemy> enemies = controller.getEnemies();
-        Image            myimg;
+    private void drawEnemies(Graphics2D g2) {
+        ArrayList<Monster> monsters = controller.getMonsters();
+        Image myimg;
 
-        for (Enemy enemy : enemies)
-        {
-            myimg = getToolkit().getImage("../resources/characters/enemy" + enemy.getNumImg() + ".png");
+        for (Monster monster : monsters) {
+            myimg = getToolkit().getImage("../../../resources/characters/monster" + monster.getNumImg() + ".png");
 
             prepareImage(myimg, this);
-            g2.drawImage(myimg, enemy.getPosition().x * sizeSquare + (sizeSquare >> 2), enemy.getPosition().y * sizeSquare, this);
+            g2.drawImage(myimg, monster.getPosition().x * sizeSquare + (sizeSquare >> 2), monster.getPosition().y * sizeSquare, this);
         }
     }
 }

@@ -1,11 +1,9 @@
 package swingy.mvc;
 
-import lombok.Getter;
-import lombok.Setter;
 import swingy.bd.DataBase;
 import swingy.mvc.models.Artifact;
-import swingy.mvc.models.Enemy;
-import swingy.mvc.models.EnemyBuilder;
+import swingy.mvc.models.Monster;
+import swingy.mvc.models.MonsterBuilder;
 import swingy.mvc.views.*;
 
 import java.awt.*;
@@ -16,88 +14,87 @@ import java.util.Random;
 import swingy.mvc.models.Character;
 import swingy.mvc.views.console.*;
 import swingy.mvc.views.swing.*;
+import swingy.util.Constants;
 
-public class Controller
-{
+public class Controller {
     private IView currentGui;
 
     private Character character;
     private int sizeMap;
-    private ArrayList<Enemy> enemies;
+    private ArrayList<Monster> monsters;
     private Random rand;
 
-    /************** Constructor *****************/
-
     public Controller() {
-        this.enemies = new ArrayList<>();
-        this.sizeMap = 0;
-        this.rand = new Random();
-        this.currentGui = null;
+        monsters = new ArrayList<>();
+        sizeMap = 0;
+        rand = new Random();
+        currentGui = null;
     }
 
-    /************* Game ******************/
-
-    public  void    startGame(String argument) throws Exception {
-        if (!argument.equals("gui") && !argument.equals("console"))
-            throw new IOException("bad argument [gui or console]");
-        this.changeGui(argument);
-        if (this.character == null) {
-            this.currentGui.ChooseHero();
-            this.sizeMap = (this.character.getLevel() - 1) * 5 + 10 - (this.character.getLevel() % 2);
-            this.initNewGame();
+    public void startGame(String argument) throws Exception {
+        if (!argument.equals(Constants.GUI_STR) && !argument.equals(Constants.CONSOLE_STR)) {
+            throw new IOException("Please, use a correct argument [gui or console]");
         }
-        this.currentGui.drawGameObjects();
+        changeGui(argument);
+        if (character == null) {
+            currentGui.ChooseCharacter();
+            sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
+            initNewGame();
+        }
+        currentGui.drawGameObjects();
     }
 
-    /**************** Public methods for View *****************/
+    public void keyPressed(int key) {
+        handleKey(key);
+        handleCollisions();
 
-    public void    keyPressed(int key) {
-        this.handleKey(key);
-        this.handleCollisions();
-
-        this.currentGui.updateData();
-        this.currentGui.viewRepaint();
+        currentGui.updateData();
+        currentGui.viewRepaint();
 
         if (sizeMap > 9)
             currentGui.scrollPositionManager();
     }
 
-    public void    saveHero()
-    {
-        if (currentGui.simpleDialog("Save your character ?"))
-            DataBase.getDb().updateHero(this.character);
+    public void saveCharacter() {
+        if (currentGui.simpleDialog("Save your character?"))
+            DataBase.getDb().updateCharacter(character);
     }
 
-    /****************** Private methods *****************/
-
-    private void    handleKey(int key)
-    {
-        switch (key)
-        {
+    private void handleKey(int key) {
+        switch (key) {
             case 37:
-                if (this.character.getPosition().x - 1 >= 0)
-                    this.character.move(-1, 0);
-                else
-                    key = -1; break;
+                if (character.getPosition().x - 1 >= 0) {
+                    character.move(-1, 0);
+                } else {
+                    key = -1;
+                }
+                break;
             case 38:
-                if (this.character.getPosition().y - 1 >= 0)
-                    this.character.move(0, -1);
-                else key = -1; break;
-
+                if (character.getPosition().y - 1 >= 0) {
+                    character.move(0, -1);
+                } else {
+                    key = -1;
+                }
+                break;
             case 39:
-                if (this.character.getPosition().x + 1 < this.sizeMap)
-                    this.character.move(1, 0);
-                else key = -1; break;
-
+                if (character.getPosition().x + 1 < sizeMap) {
+                    character.move(1, 0);
+                } else {
+                    key = -1;
+                }
+                break;
             case 40:
-                if (this.character.getPosition().y + 1 < this.sizeMap)
-                    this.character.move(0, 1);
-                else key = -1; break;
+                if (character.getPosition().y + 1 < sizeMap) {
+                    character.move(0, 1);
+                } else {
+                    key = -1;
+                }
+                break;
             case -2:
                 try {
-                    String type = currentGui.get_Type().equals("gui") ? "console" : "gui";
+                    String type = currentGui.getViewType().equals(Constants.GUI_STR) ? Constants.CONSOLE_STR : Constants.GUI_STR;
                     currentGui.close();
-                    this.startGame(type);
+                    startGame(type);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -105,102 +102,98 @@ public class Controller
         }
 
         if (key == -1) {
-            if (currentGui.simpleDialog("End of map, start a new game?"))
-                this.initNewGame();
+            if (currentGui.simpleDialog("End of the map, start a new game?")) {
+                initNewGame();
+            }
             else {
-                this.saveHero();
+                saveCharacter();
                 System.exit(0);
             }
         }
     }
 
-    /*************** Game logic ******************/
-
-    private void    handleCollisions() {
-        for (Enemy enemy : enemies) {
-            if (enemy.getPosition().equals(character.getPosition())) {
-                manageBattle(enemy);
+    private void handleCollisions() {
+        for (int i = 0; i < monsters.size(); i++) {
+            if (monsters.get(i).getPosition().equals(character.getPosition())) {
+                manageBattle(monsters.get(i));
             }
         }
     }
 
-    private void    initNewGame() {
-        /* Character initialization */
+    private void initNewGame() {
+        character.getPosition().setLocation( sizeMap >> 1, sizeMap >> 1);
+        character.setHitP( character.getMaxHp() );
 
-        this.character.getPosition().setLocation( sizeMap >> 1, sizeMap >> 1);
-        this.character.setHitP( character.getMaxHp() );
-
-        /* Enemies initialization */
-
-        this.dropEnemies();
+        this.updateMonsters();
     }
 
-    private void    manageBattle(Enemy enemy) {
-        Point enemyPos = enemy.getPosition();
-        this.currentGui.addLog("You met an opponent:\n    hp: " + enemy.getHp() + "\n    attack: "
-                + enemy.getAttack() + "\n    defense: " + enemy.getDefense());
-        if (currentGui.simpleDialog("Do you want a battle ?"))
-            this.battleAlgorithm(enemy);
-        else {
+    private void manageBattle(Monster monster) {
+        Point monsterPosition = monster.getPosition();
+        currentGui.addLog("You met an monster:\n    hp: " + monster.getHp() + "\n    attack: "
+                + monster.getAttack() + "\n    defense: " + monster.getDefense());
+        if (currentGui.simpleDialog("Do you want to attack him?")) {
+            battleAlgorithm(monster);
+        } else {
             if (rand.nextInt(2) % 2 == 0) {
-                this.character.setPosition(new Point(this.character.getOldPosition()));
-                this.currentGui.addLog("You are lucky to escape");
+                character.setPosition(new Point(character.getPreviousPosition()));
+                currentGui.addLog("You are lucky to escape");
             }
             else {
-                this.currentGui.addLog("Run away failed");
-                this.battleAlgorithm(enemy);
+                currentGui.addLog("You failed to run away");
+                battleAlgorithm(monster);
             }
         }
-        if (!enemyPos.equals(character.getPosition()))
-            return ;
-        if (enemy.getHp() <= 0) {
-            this.character.setExp( character.getExp() + ( (enemy.getAttack() + enemy.getDefense()) << 3 ) );
-            this.currentGui.addLog("Opponent killed! Raised " + (enemy.getAttack() + enemy.getDefense() << 3) + " experience !" );
-            this.enemies.remove(enemy);
-            this.manageCharacter(enemy);
+        if (!monsterPosition.equals(character.getPosition())) {
+            return;
+        }
+        if (monster.getHp() <= 0) {
+            character.setExp( character.getExp() + ( (monster.getAttack() + monster.getDefense()) << 3 ) );
+            currentGui.addLog("Monster was killed! Raised " + (monster.getAttack() + monster.getDefense() << 3) + " experience !" );
+            this.monsters.remove(monster);
+            manageCharacter(monster);
         }
         else
-            character.setPosition(new Point(character.getOldPosition()));
+            character.setPosition(new Point(character.getPreviousPosition()));
     }
 
-    private void    battleAlgorithm(Enemy enemy) {
+    private void battleAlgorithm(Monster monster) {
         if (rand.nextInt(7) == 6) {
-            enemy.setHp(0);
-            this.currentGui.addLog("Critical hit !!!");
+            monster.setHp(0);
+            currentGui.addLog("Critical hit!!!");
         }
         else {
-            this.character.setHitP( character.getHitP() - (enemy.getAttack() << 2) + character.getFinalDefense() );
-            if (this.checkDeath())
+            character.setHitP( character.getHitP() - (monster.getAttack() << 2) + character.getFinalDefense() );
+            if (checkDeath()) {
                 return;
-            enemy.setHp( enemy.getHp() - character.getFinalAttack() + enemy.getDefense());
-            int raisedDamage = (enemy.getAttack() << 2) - character.getFinalDefense();
-            this.currentGui.addLog("You caused " + (character.getFinalAttack() - enemy.getDefense())
-                    + " damage to the opponent !\n" + (raisedDamage < 0 ? " Blocked up all" : " Raised " + raisedDamage ) + " damage.");
+            }
+            monster.setHp( monster.getHp() - character.getFinalAttack() + monster.getDefense());
+            int raisedDamage = (monster.getAttack() << 2) - character.getFinalDefense();
+            currentGui.addLog("You caused " + (character.getFinalAttack() - monster.getDefense())
+                    + " damage to the monster !\n" + (raisedDamage < 0 ? " Blocked up all damage" : " Raised " + raisedDamage ) + " damage.");
         }
     }
 
-    private void manageCharacter(Enemy enemy)
-    {
-        if (character.getExp() >= character.getNeccesaryExp()) {
-            currentGui.addLog("Level up ! Skills increased !");
+    private void manageCharacter(Monster monster) {
+        if (character.getExp() >= character.getNecessaryExp()) {
+            currentGui.addLog("Level up ! Skills increased!");
             character.setMaxHp( character.getMaxHp() + (4 << character.getLevel()) );
             character.setHitP( character.getMaxHp() );
             character.setAttack( character.getAttack() + (character.getLevel() << 2) );
             character.setDefense( character.getDefense() + (character.getLevel() << 1) );
             character.setLevel( character.getLevel() + 1 );
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
-            this.dropEnemies();
+            this.updateMonsters();
         }
-        this.manageBonuses(enemy);
+        manageBonuses(monster);
     }
 
-    private boolean   checkDeath() {
+    private boolean checkDeath() {
         if (character.getHitP() <= 0 ) {
             currentGui.updateData();
-            if (currentGui.simpleDialog("You died, respawn at center of map ?"))
+            if (currentGui.simpleDialog("You have failed, you died, respawn at the center of map ?")) {
                 initNewGame();
-            else {
-                saveHero();
+            } else {
+                saveCharacter();
                 System.exit(0);
             }
             return true;
@@ -208,38 +201,38 @@ public class Controller
         return false;
     }
 
-    private void    manageBonuses(Enemy enemy) {
+    private void manageBonuses(Monster monster) {
         if (rand.nextInt(3) == 2) {
             if (rand.nextInt(2) == 0) {
-                int up = rand.nextInt(30) + 5;
+                int up = rand.nextInt(40) + 10;
                 character.setHitP(character.getHitP() + up);
-                currentGui.addLog("Found health elixir + " + up + " hp !");
+                currentGui.addLog("Health elixir was found + " + up + " hp!");
             }
-            else
-                this.manageArtifacts(enemy);
+            else {
+                manageArtifacts(monster);
+            }
         }
     }
 
-    private void    dropEnemies() {
-        this.enemies.clear();
-        EnemyBuilder enemyBuilder = new EnemyBuilder();
-        for (int i = rand.nextInt(sizeMap) + sizeMap; i > 0; i--)
-            this.enemies.add(enemyBuilder.buildEnemy(sizeMap, enemies, character));
+    private void updateMonsters() {
+        this.monsters.clear();
+        MonsterBuilder monsterBuilder = new MonsterBuilder();
+        for (int i = rand.nextInt(sizeMap) + sizeMap; i > 0; i--) {
+            this.monsters.add(monsterBuilder.buildMonster(sizeMap, monsters, character));
+        }
     }
 
-    private void  manageArtifacts(Enemy enemy) {
-        String artifact = rand.nextInt(2) == 0 ? "attack" : "defense";
-        int    value = ((artifact.equals("attack") ? enemy.getAttack() : enemy.getDefense()) >> 1) + 1;
-        if ( currentGui.simpleDialog("Found " + artifact + " artifact (" + value + ") pick it up ?")) {
+    private void manageArtifacts(Monster monster) {
+        String artifact = rand.nextInt(2) == 0 ? "attack" : Constants.DEFENSE_STR;
+        int value = ((artifact.equals("attack") ? monster.getAttack() : monster.getDefense()) >> 1) + 1;
+        if (currentGui.simpleDialog("Found " + artifact + " artifact (" + value + ") pick it up ?")) {
             character.setArtifact( new Artifact(artifact, value) );
             currentGui.addLog("New artifact equipped");
         }
     }
 
-    /**************** Gui changing ****************************/
-
-    private void    changeGui(String guiName) {
-        this.currentGui = guiName.equals("gui") ? new SwingView(this) : new ConsoleView(this);
+    private void changeGui(String guiName) {
+        currentGui = guiName.equals(Constants.GUI_STR) ? new SwingView(this) : new ConsoleView(this);
     }
 
     public Character getCharacter() {
@@ -254,7 +247,7 @@ public class Controller
         return sizeMap;
     }
 
-    public ArrayList<Enemy> getEnemies() {
-        return enemies;
+    public ArrayList<Monster> getMonsters() {
+        return monsters;
     }
 }

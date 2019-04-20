@@ -1,12 +1,10 @@
 package swingy.mvc.models;
 
-public class Artifact
-{
+public class Artifact {
     private int value;
     private String type;
 
-    public Artifact(String type, int value)
-    {
+    public Artifact(String type, int value) {
         this.type = type;
         this.value = value;
     }
