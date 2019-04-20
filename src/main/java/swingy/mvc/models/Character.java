@@ -1,12 +1,15 @@
 package swingy.mvc.models;
 
+import swingy.mvc.Controller;
+import swingy.util.Constants;
+
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Pattern;
 import java.awt.*;
 
 public class Character {
     @Pattern(regexp = "^[0-9A-Za-z]+", message = "Only digits and letters in name")
-    @Size(min = 4, max = 12, message = "Size of name must be 4-12 symbols length")
+    @Size(min = 3, max = 12, message = "Size of name must be 3-12 symbols length")
     private String  name;
     private String  type;
     private int     level;
@@ -17,14 +20,13 @@ public class Character {
     private int     hitP;
 
     private Point   position;
-    private Point   oldPosition;
+    private Point previousPosition;
 
     private Artifact artifact;
 
-
     public Character() {
         this.position = new Point(0, 0);
-        this.oldPosition = new Point(0, 0);
+        this.previousPosition = new Point(0, 0);
         this.artifact = null;
     }
 
@@ -34,11 +36,11 @@ public class Character {
     }
 
     public void move(int x, int y) {
-        this.oldPosition.setLocation(this.position.x, this.position.y);
+        this.previousPosition.setLocation(this.position.x, this.position.y);
         this.position.setLocation(this.position.x + x, this.position.y + y);
     }
 
-    public int getNeccesaryExp() {
+    public int getNecessaryExp() {
         return (int)(level * 1000 + Math.pow(level - 1, 2) * 450);
     }
 
@@ -53,19 +55,17 @@ public class Character {
         }
     }
 
-    public int      getFinalAttack() {
-        if (artifact != null && artifact.getType().equals("attack")) {
+    public int getFinalAttack() {
+        if (artifact != null && artifact.getType().equals(Constants.ATTACK_STR)) {
             return ((attack + artifact.getValue()) << 2);
         }
-
         return (attack << 2);
     }
 
-    public int      getFinalDefense() {
-        if (artifact != null && artifact.getType().equals("defense")) {
+    public int getFinalDefense() {
+        if (artifact != null && artifact.getType().equals(Constants.DEFENSE_STR)) {
             return (defense + artifact.getValue());
         }
-
         return defense;
     }
 
@@ -105,8 +105,8 @@ public class Character {
         return position;
     }
 
-    public Point getOldPosition() {
-        return oldPosition;
+    public Point getPreviousPosition() {
+        return previousPosition;
     }
 
     public Artifact getArtifact() {
@@ -145,8 +145,8 @@ public class Character {
         this.position = position;
     }
 
-    public void setOldPosition(Point oldPosition) {
-        this.oldPosition = oldPosition;
+    public void setPreviousPosition(Point previousPosition) {
+        this.previousPosition = previousPosition;
     }
 
     public void setArtifact(Artifact artifact) {

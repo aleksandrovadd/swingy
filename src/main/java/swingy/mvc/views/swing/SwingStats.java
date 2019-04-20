@@ -2,6 +2,7 @@ package swingy.mvc.views.swing;
 
 import javax.swing.*;
 import swingy.mvc.models.Character;
+import swingy.util.Constants;
 
 import java.awt.*;
 import java.io.File;
@@ -13,16 +14,13 @@ public class SwingStats extends JPanel
 {
     private Character character;
     private Map<String, JLabel> stats;
-    private Font                font;
-    private String              res;
+    private Font font;
+    private String res;
 
-    /***************** Constructor *********************/
-
-    public SwingStats(Character hero)
-    {
-        this.character = hero;
+    public SwingStats(Character character) {
+        this.character = character;
         this.stats = new HashMap<>();
-        this.res = "../resources/icons/";
+        this.res = "../../../resources/icons/";
 
         this.setLayout(null);
         this.setSize(325, 500);
@@ -30,14 +28,11 @@ public class SwingStats extends JPanel
     }
 
     @Override
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g) {
         super.paint(g);
 
         g.drawRect(1, 1, 323, 498);
     }
-
-    /********************* Public method *********************/
 
     public void updateData() {
         if (stats.size() == 0)
@@ -51,15 +46,14 @@ public class SwingStats extends JPanel
         }
 
         stats.get("level").setText("Level: " + character.getLevel());
-        stats.get("exp").setText("Exp: " + character.getExp() + "/" + character.getNeccesaryExp());
+        stats.get("exp").setText("Exp: " + character.getExp() + "/" + character.getNecessaryExp());
         stats.get("attack").setText(String.valueOf(character.getAttack()));
-        stats.get("defense").setText(" " + character.getDefense());
+        stats.get(Constants.DEFENSE_STR).setText(" " + character.getDefense());
         stats.get("hp").setText(" " + character.getHitP() + "/" + character.getMaxHp());
 
-        if (character.getArtifact() != null && !character.getArtifact().getType().equals(""))
-        {
+        if (character.getArtifact() != null && !character.getArtifact().getType().equals("")) {
             stats.get("artifact").setIcon(new ImageIcon(
-                    res + (character.getArtifact().getType() == "attack" ? "artifactA.png" : "artifactD.png") ));
+                    res + (character.getArtifact().getType() == Constants.ATTACK_STR ? "artifactA.png" : "artifactD.png") ));
             stats.get("artifact").setText(" " + character.getArtifact().getValue());
         }
         else {
@@ -67,8 +61,6 @@ public class SwingStats extends JPanel
             stats.get("artifact").setIcon(null);
         }
     }
-
-    /****************** Preparing Objects to painting *****************/
 
     private void prepareInfo()
     {
@@ -100,7 +92,7 @@ public class SwingStats extends JPanel
             location.setText("Location: [" + character.getPosition().x + ", " + character.getPosition().y + "]");
         }
 
-        JLabel exp = new JLabel("Exp: " + character.getExp() + "/" + character.getNeccesaryExp() );
+        JLabel exp = new JLabel("Exp: " + character.getExp() + "/" + character.getNecessaryExp() );
         exp.setLocation(20, 205);
         exp.setSize(320, 50);
         exp.setFont(this.font);
@@ -132,8 +124,8 @@ public class SwingStats extends JPanel
         this.stats.put("type", type);
         this.stats.put("level", level);
         this.stats.put("location", location);
-        this.stats.put("attack", attack);
-        this.stats.put("defense", defense);
+        this.stats.put(Constants.ATTACK_STR, attack);
+        this.stats.put(Constants.DEFENSE_STR, defense);
         this.stats.put("hp", hp);
         this.stats.put("exp", exp);
         this.stats.put("artifact", artifact);
@@ -152,7 +144,7 @@ public class SwingStats extends JPanel
     private void loadFont()
     {
         try {
-            this.font = Font.createFont(Font.TRUETYPE_FONT, new File("../resources/fonts/font.ttf")).deriveFont(30f);
+            this.font = Font.createFont(Font.TRUETYPE_FONT, new File("../../../resources/fonts/font.ttf")).deriveFont(30f);
         } catch (FontFormatException e) {
             e.printStackTrace();
         } catch (IOException e) {

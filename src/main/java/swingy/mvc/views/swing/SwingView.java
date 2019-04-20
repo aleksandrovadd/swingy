@@ -2,6 +2,7 @@ package swingy.mvc.views.swing;
 
 import swingy.mvc.Controller;
 import swingy.mvc.views.IView;
+import swingy.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,8 +27,6 @@ public class SwingView extends JFrame implements IView
 
     private String                  type;
 
-    /****************** Constructor *******************/
-
     public SwingView(Controller controller) {
         super("Swingy");
 
@@ -38,7 +37,7 @@ public class SwingView extends JFrame implements IView
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 if (controller.getCharacter() != null)
-                    controller.saveHero();
+                    controller.saveCharacter();
             }
         });
 
@@ -52,15 +51,13 @@ public class SwingView extends JFrame implements IView
 
         setContentPane(panel);
 
-        type = "gui";
+        type = Constants.GUI_STR;
         addKeyListener(keySupporter);
     }
 
-    /***************** Implementing of Interface IView **********************/
-
     @Override
-    public void ChooseHero() throws Exception {
-        controller.setCharacter(new SwingChooseHero(panel).ChooseHero());
+    public void ChooseCharacter() throws Exception {
+        controller.setCharacter(new SwingChooseCharacter(panel).Choosecharacter());
     }
 
     @Override
@@ -122,8 +119,6 @@ public class SwingView extends JFrame implements IView
         setVisible(false);
         dispose();
     }
-
-    /************** Private Methods and classes ********************/
 
     private void   initScrolls() {
         this.map = new SwingMapPanel(this.controller, this.squareSize);

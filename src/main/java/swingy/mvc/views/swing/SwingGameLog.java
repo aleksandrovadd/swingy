@@ -9,8 +9,7 @@ public class SwingGameLog extends JTextArea
 {
     private Font    font;
 
-    public SwingGameLog()
-    {
+    public SwingGameLog() {
         this.font = null;
         this.setLayout(null);
         this.setAutoscrolls(true);
@@ -21,10 +20,10 @@ public class SwingGameLog extends JTextArea
         this.setFocusable(false);
     }
 
-    private void    loadFont()
-    {
+    private void    loadFont() {
         try {
-            this.font = Font.createFont(Font.TRUETYPE_FONT, new File("../resources/fonts/font.otf")).deriveFont(18f);
+            File file = new File("../../../resources/fonts/font.otf");
+            this.font = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(18f);
         } catch (FontFormatException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -33,10 +32,8 @@ public class SwingGameLog extends JTextArea
     }
 
     @Override
-    public void	append(String str)
-    {
-        if (this.font == null)
-        {
+    public void	append(String str) {
+        if (this.font == null) {
             this.loadFont();
             this.setFont(font);
         }
