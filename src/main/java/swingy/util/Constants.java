@@ -2,6 +2,8 @@ package swingy.util;
 
 public class Constants {
 
+    public static final int COME_BACK = 0;
+
     public static final int SELECT = 1;
     public static final int REMOVE = 2;
     public static final int CANCEL = 3;
@@ -19,6 +21,8 @@ public class Constants {
 
     public static final String GUI_STR = "gui";
     public static final String CONSOLE_STR = "console";
+
+    public static final String COME_BACK_STR = "come back";
 
     public static final String WARRIOR_TYPE = "Warrior";
     public static final String MAGE_TYPE = "Mage";

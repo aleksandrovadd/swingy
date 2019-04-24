@@ -7,16 +7,15 @@ import java.util.ArrayList;
 import swingy.mvc.Controller;
 import swingy.mvc.models.Monster;
 
-public class SwingMapPanel extends JPanel
-{
+public class SwingMapPanel extends JPanel {
     private Controller controller;
     private int sizeSquare;
 
-    public SwingMapPanel(Controller controller, int sizeSquare) {
+    SwingMapPanel(Controller controller, int sizeSquare) {
         this.controller = controller;
         this.sizeSquare = sizeSquare;
-        this.setLayout(null);
-        this.setDoubleBuffered(true);
+        setLayout(null);
+        setDoubleBuffered(true);
     }
 
     @Override
@@ -25,13 +24,13 @@ public class SwingMapPanel extends JPanel
 
         Graphics2D g2 = (Graphics2D)g;
 
-        this.drawMap(g2);
-        this.drawCharacter(g2);
-        this.drawEnemies(g2);
+        drawMap(g2);
+        drawCharacter(g2);
+        drawEnemies(g2);
     }
 
     private void drawMap(Graphics2D g2) {
-        this.setPreferredSize( new Dimension(sizeSquare * controller.getSizeMap(), sizeSquare * controller.getSizeMap()) );
+        setPreferredSize( new Dimension(sizeSquare * controller.getSizeMap(), sizeSquare * controller.getSizeMap()) );
         for (int i = 0; i < controller.getSizeMap(); i++) {
             for (int j = 0; j < controller.getSizeMap(); j++) {
                 g2.drawRect(sizeSquare * j, sizeSquare * i, sizeSquare, sizeSquare);

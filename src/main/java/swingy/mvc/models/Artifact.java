@@ -1,6 +1,7 @@
 package swingy.mvc.models;
 
 public class Artifact {
+
     private int value;
     private String type;
 

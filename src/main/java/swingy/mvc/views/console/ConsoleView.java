@@ -9,30 +9,30 @@ import java.util.*;
 
 public class ConsoleView implements IView
 {
-    private Controller            controller;
-    private Scanner               scanner;
-    private ArrayList<char[]>     map;
-    private int                   numStat;
-    private String                type;
+    private Controller controller;
+    private Scanner scanner;
+    private ArrayList<char[]> map;
+    private int numStat;
+    private String type;
 
     public ConsoleView(Controller controller) {
         this.controller = controller;
-        this.scanner = new Scanner(System.in);
-        this.map = new ArrayList<>();
-        this.numStat = 0;
-        this.type = Constants.CONSOLE_STR;
+        scanner = new Scanner(System.in);
+        map = new ArrayList<>();
+        numStat = 0;
+        type = Constants.CONSOLE_STR;
     }
 
     @Override
     public void ChooseCharacter() throws Exception {
-        controller.setCharacter( new ConsoleChooseCharacter(scanner).getCharacter() );
+        controller.setCharacter(new ConsoleChooseCharacter(scanner).getCharacter());
     }
 
     @Override
     public void drawGameObjects() {
         drawMap();
         System.out.println("\n0) Exit\n\n     1) North\n2) West     3) East\n     4) South\n\"gui\" - for gui-mode");
-        controller.keyPressed(getNiceValue());
+        controller.keyPressed(getValidValue());
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ConsoleView implements IView
 
         int key;
 
-        while ((key = getNiceValue()) != 38 && key != 37) {
+        while ((key = getValidValue()) != 38 && key != 37) {
             System.err.println("Unknown value.");
         }
 
@@ -54,13 +54,13 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public void   scrollPositionManager(){}
+    public void scrollPositionManager(){}
 
     @Override
-    public void   updateData(){}
+    public void updateData(){}
 
     @Override
-    public void   addLog(String text) {
+    public void addLog(String text) {
         System.out.println(text);
     }
 
@@ -68,7 +68,7 @@ public class ConsoleView implements IView
     public String getViewType() { return this.type; }
 
     @Override
-    public void   close() {
+    public void close() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
@@ -91,7 +91,7 @@ public class ConsoleView implements IView
         }
     }
 
-    private int    getNiceValue() {
+    private int getValidValue() {
         String str;
 
         while (true) {
@@ -113,40 +113,69 @@ public class ConsoleView implements IView
                 break;
         }
         int value = -3;
-        switch ( Integer.parseInt(str) ) {
-            case 1: value = 38;                                  break;
-            case 2: value = 37;                                  break;
-            case 3: value = 39;                                  break;
-            case 4: value = 40;                                  break;
-            case 0: controller.saveCharacter(); System.exit(0); break;
-            case -2: value = -2;                                 break;
+        switch (Integer.parseInt(str) ) {
+            case 1:
+                value = 38;
+                break;
+            case 2:
+                value = 37;
+                break;
+            case 3:
+                value = 39;
+                break;
+            case 4:
+                value = 40;
+                break;
+            case 0:
+                controller.saveCharacter(); System.exit(0);
+                break;
+            case -2:
+                value = -2;
+                break;
         }
         return value;
     }
 
-    private String  getStat(int numStat) {
-        if (numStat > 9)
-            return "";
+    private String getStat(int numStat) {
 
         String stat = "       ";
 
         switch (numStat) {
-            case 0: stat += "Name: " + controller.getCharacter().getName();          break;
-            case 1: stat += "Type: " + controller.getCharacter().getType();          break;
-            case 2: stat += "Level: " + controller.getCharacter().getLevel();        break;
-            case 3: stat += "Location [" + controller.getCharacter().getPosition().x + ", "
-                    + controller.getCharacter().getPosition().y + "]";               break;
-            case 4: stat += "Exp: " + controller.getCharacter().getExp() + "/" +
-                    controller.getCharacter().getNecessaryExp();                     break;
-            case 5: stat += "Attack: " + controller.getCharacter().getAttack();      break;
-            case 6: stat += "Defense: " + controller.getCharacter().getDefense();    break;
-            case 7: stat += "Hp: " + controller.getCharacter().getHitP() + "/"
-                    + controller.getCharacter().getMaxHp();                          break;
-            case 8: if ( controller.getCharacter().getArtifact() != null && !controller.getCharacter().getArtifact().getType().equals("") ) {
+            case 0:
+                stat += "Name: " + controller.getCharacter().getName();
+                break;
+            case 1:
+                stat += "Type: " + controller.getCharacter().getType();
+                break;
+            case 2:
+                stat += "Level: " + controller.getCharacter().getLevel();
+                break;
+            case 3:
+                stat += "Location [" + controller.getCharacter().getPosition().x + ", "
+                    + controller.getCharacter().getPosition().y + "]";
+                break;
+            case 4:
+                stat += "Exp: " + controller.getCharacter().getExp() + "/" +
+                    controller.getCharacter().getNecessaryExp();
+                break;
+            case 5:
+                stat += "Attack: " + controller.getCharacter().getAttack();
+                break;
+            case 6:
+                stat += "Defense: " + controller.getCharacter().getDefense();
+                break;
+            case 7:
+                stat += "Hp: " + controller.getCharacter().getHitP() + "/"
+                    + controller.getCharacter().getMaxHp();
+                break;
+            case 8:
+                if (controller.getCharacter().getArtifact() != null && !controller.getCharacter().getArtifact().getType().equals("") ) {
                 stat += "Artifact-" + controller.getCharacter().getArtifact().getType() + ": " +
                         controller.getCharacter().getArtifact().getValue();
-            }
-            break;
+                }
+                break;
+                default:
+                    return "";
         }
 
         return stat;

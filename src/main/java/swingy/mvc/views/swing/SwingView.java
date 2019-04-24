@@ -13,19 +13,19 @@ import java.awt.event.WindowEvent;
 
 public class SwingView extends JFrame implements IView
 {
-    private Controller              controller;
-    private KeyAdapter              keySupporter;
-    private SwingPanel              panel;
-    private SwingMapPanel           map;
-    private JScrollPane             scrollMap;
-    private JScrollPane             scrollGameLog;
+    private Controller controller;
+    private KeyAdapter keySupporter;
+    private JPanel panel;
+    private SwingMapPanel map;
+    private JScrollPane scrollMap;
+    private JScrollPane scrollGameLog;
 
-    private int                     squareSize;
+    private int squareSize;
 
-    private SwingStats              stats;
-    private SwingGameLog            gameLog;
+    private SwingStats stats;
+    private SwingGameLog gameLog;
 
-    private String                  type;
+    private String type;
 
     public SwingView(Controller controller) {
         super("Swingy");
@@ -36,8 +36,9 @@ public class SwingView extends JFrame implements IView
         setLayout(null);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                if (controller.getCharacter() != null)
+                if (controller.getCharacter() != null) {
                     controller.saveCharacter();
+                }
             }
         });
 
@@ -46,7 +47,11 @@ public class SwingView extends JFrame implements IView
         setVisible(true);
         setFocusable(true);
 
-        panel = new SwingPanel(controller);
+        panel = new JPanel();
+        panel.setBounds(0, 0, 1200, 1000);
+        panel.setVisible(true);
+        panel.setLayout(null);
+
         squareSize = 70;
 
         setContentPane(panel);
@@ -62,7 +67,7 @@ public class SwingView extends JFrame implements IView
 
     @Override
     public void drawGameObjects() {
-        this.initScrolls();
+        initScrolls();
         stats = new SwingStats(controller.getCharacter());
         stats.updateData();
 
@@ -75,20 +80,19 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public void viewRepaint()
-    {
+    public void viewRepaint() {
         panel.repaint();
     }
 
     @Override
-    public void   addLog(String text) {
+    public void addLog(String text) {
         gameLog.append(" " + text + "\n");
-        this.scrollGameLog.getViewport().setViewPosition( new Point( scrollGameLog.getViewport().getViewPosition().x,
+        scrollGameLog.getViewport().setViewPosition(new Point( scrollGameLog.getViewport().getViewPosition().x,
                 scrollGameLog.getViewport().getViewPosition().y + 30) );
     }
 
     @Override
-    public void     scrollPositionManager() {
+    public void scrollPositionManager() {
         Point newPosition = new Point(controller.getCharacter().getPosition().x * squareSize - 275,
                 controller.getCharacter().getPosition().y * squareSize - 275);
 
@@ -106,8 +110,7 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public void updateData()
-    {
+    public void updateData() {
         stats.updateData();
     }
 
@@ -115,27 +118,28 @@ public class SwingView extends JFrame implements IView
     public String getViewType() { return type; }
 
     @Override
-    public void   close() {
+    public void close() {
         setVisible(false);
         dispose();
     }
 
-    private void   initScrolls() {
-        this.map = new SwingMapPanel(this.controller, this.squareSize);
-        this.scrollMap = new JScrollPane(this.map);
+    private void initScrolls() {
+        map = new SwingMapPanel(controller, squareSize);
+        scrollMap = new JScrollPane(map);
 
-        this.scrollMap.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        this.scrollMap.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        this.scrollMap.setBounds(500, 50, 650, 650);
-        this.scrollMap.getViewport().setViewPosition( new Point(controller.getCharacter().getPosition().x * 70 - 275, controller.getCharacter().getPosition().x * 70 - 275) );
-        this.scrollMap.repaint();
+        scrollMap.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollMap.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollMap.setBounds(500, 50, 650, 650);
+        scrollMap.getViewport().setViewPosition(new Point(controller.getCharacter().getPosition().x * 70 - 275,
+                controller.getCharacter().getPosition().x * 70 - 275) );
+        scrollMap.repaint();
 
-        this.gameLog = new SwingGameLog();
-        this.scrollGameLog = new JScrollPane(this.gameLog);
-        this.scrollGameLog.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        this.scrollGameLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        this.scrollGameLog.setBounds(50, 565, 325, 400);
-        this.scrollGameLog.repaint();
+        gameLog = new SwingGameLog();
+        scrollGameLog = new JScrollPane(gameLog);
+        scrollGameLog.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollGameLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollGameLog.setBounds(50, 565, 325, 400);
+        scrollGameLog.repaint();
     }
 
     private class KeySupporter extends KeyAdapter {

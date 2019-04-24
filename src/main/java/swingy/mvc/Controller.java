@@ -57,7 +57,7 @@ public class Controller {
 
     public void saveCharacter() {
         if (currentGui.simpleDialog("Save your character?"))
-            DataBase.getDb().updateCharacter(character);
+            DataBase.getDataBase().updateCharacter(character);
     }
 
     private void handleKey(int key) {
@@ -122,7 +122,7 @@ public class Controller {
 
     private void initNewGame() {
         character.getPosition().setLocation( sizeMap >> 1, sizeMap >> 1);
-        character.setHitP( character.getMaxHp() );
+        character.setHitPoint( character.getMaxHp() );
 
         this.updateMonsters();
     }
@@ -162,7 +162,7 @@ public class Controller {
             currentGui.addLog("Critical hit!!!");
         }
         else {
-            character.setHitP(character.getHitP() - (monster.getAttack() << 2) + character.getFinalDefense());
+            character.setHitPoint(character.getHitP() - (monster.getAttack() << 2) + character.getFinalDefense());
             if (checkDeath()) {
                 return;
             }
@@ -177,7 +177,7 @@ public class Controller {
         if (character.getExp() >= character.getNecessaryExp()) {
             currentGui.addLog("Level up ! Skills increased!");
             character.setMaxHp( character.getMaxHp() + (4 << character.getLevel()) );
-            character.setHitP( character.getMaxHp() );
+            character.setHitPoint( character.getMaxHp() );
             character.setAttack( character.getAttack() + (character.getLevel() << 2));
             character.setDefense( character.getDefense() + (character.getLevel() << 1));
             character.setLevel( character.getLevel() + 1 );
@@ -205,7 +205,7 @@ public class Controller {
         if (rand.nextInt(3) == 2) {
             if (rand.nextInt(2) == 0) {
                 int up = rand.nextInt(80) + 10;
-                character.setHitP(character.getHitP() + up);
+                character.setHitPoint(character.getHitP() + up);
                 currentGui.addLog("Health elixir was found + " + up + " hp!");
             }
             else {

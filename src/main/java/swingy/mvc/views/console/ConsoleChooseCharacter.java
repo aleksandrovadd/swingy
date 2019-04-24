@@ -1,7 +1,7 @@
 package swingy.mvc.views.console;
 
 import swingy.bd.DataBase;
-import swingy.mvc.models.characterBuilder.CharacterBuilder;
+import swingy.mvc.models.CharacterBuilder;
 import swingy.mvc.models.Character;
 
 import java.util.List;
@@ -9,23 +9,21 @@ import java.util.Scanner;
 
 import static swingy.util.Constants.*;
 
-public class ConsoleChooseCharacter {
+class ConsoleChooseCharacter {
 
-    private CharacterBuilder builder;
     private List<String> names;
     private Character character;
     private Scanner scanner;
 
-    public ConsoleChooseCharacter(Scanner scanner) {
-        builder = new CharacterBuilder();
+    ConsoleChooseCharacter(Scanner scanner) {
         this.scanner = scanner;
     }
 
-    public Character getCharacter() throws Exception {
+    Character getCharacter() throws Exception {
         int value;
 
-        DataBase.getDb().connectDb();
-        names = DataBase.getDb().getNames();
+        DataBase.getDataBase().connectDb();
+        names = DataBase.getDataBase().getNames();
 
         while (character == null) {
             System.out.println("0) Exit\n1) Select previously created character\n2) Create new character");
@@ -61,15 +59,15 @@ public class ConsoleChooseCharacter {
             if ((value = getValidValue()) == 0)
                 break;
             else if (value <= index) {
-                System.out.println(DataBase.getDb().getCharacter(names.get(value - 1)).getInfo());
-                System.out.println(String.format("\nMake choice: 1) %s   2) %s   3) %s", SELECT_STR, REMOVE_STR, CANCEL_STR));
+                System.out.println(DataBase.getDataBase().getCharacter(names.get(value - 1)).getInfo());
+                System.out.printf("\nMake choice: 1) %s   2) %s   3) %s", SELECT_STR, REMOVE_STR, CANCEL_STR);
                 int choice = getValidValue();
                 if (choice == SELECT) {
-                    character = DataBase.getDb().getCharacter(names.get(value - 1));
+                    character = DataBase.getDataBase().getCharacter(names.get(value - 1));
                 }
                 else if (choice == REMOVE) {
                     try {
-                        DataBase.getDb().remove( names.get(value - 1) );
+                        DataBase.getDataBase().remove( names.get(value - 1) );
                         names.remove(value - 1);
                     }
                     catch (Exception e) {
@@ -85,18 +83,23 @@ public class ConsoleChooseCharacter {
 
     private void chooseCharacterType() {
         int value;
-
         while (true) {
-            System.out.println(String.format("0) come back\n1) %s\n2) %s\n3) %s\n", WARRIOR_TYPE, MAGE_TYPE, ROGUE_TYPE));
-            if ((value = getValidValue()) == 0) {
-                break;
-            }
-            if ((value > 0 && value < 4)) {
-                switch (value) {
-                    case WARRIOR: createNewCharacter(WARRIOR_TYPE); break;
-                    case MAGE: createNewCharacter(MAGE_TYPE);   break;
-                    case ROGUE: createNewCharacter(ROGUE_TYPE);   break;
-                }
+            System.out.printf("0) %s\n1) %s\n2) %s\n3) %s\n", COME_BACK_STR, WARRIOR_TYPE, MAGE_TYPE, ROGUE_TYPE);
+            value = getValidValue();
+            switch (value) {
+                case COME_BACK:
+                    return;
+                case WARRIOR:
+                    createNewCharacter(WARRIOR_TYPE);
+                    break;
+                case MAGE:
+                    createNewCharacter(MAGE_TYPE);
+                     break;
+                case ROGUE:
+                     createNewCharacter(ROGUE_TYPE);
+                     break;
+                     default:
+                         break;
             }
         }
     }
@@ -104,7 +107,7 @@ public class ConsoleChooseCharacter {
     private void createNewCharacter(String type) {
         String characterName = "";
         String error = "";
-        Character newCharacter = builder.buildByType(type);
+        Character newCharacter = CharacterBuilder.buildByType(type);
         System.out.println(newCharacter.getInfo() + "\nCreate character?  1) Yes   2) No");
         int value = getValidValue();
         if (value == YES) {
@@ -113,7 +116,7 @@ public class ConsoleChooseCharacter {
                 while (characterName.equals("")) {
                     characterName = scanner.nextLine();
                 }
-                error = builder.setName(newCharacter, characterName);
+                error = CharacterBuilder.setName(newCharacter, characterName);
                 for (String name : names) {
                     if (name.equals(characterName)) {
                         error = "Character with such name already exists";
@@ -125,7 +128,7 @@ public class ConsoleChooseCharacter {
                 characterName = "";
             }
             try {
-                DataBase.getDb().addNewCharacter(newCharacter);
+                DataBase.getDataBase().addNewCharacter(newCharacter);
                 this.names.add(newCharacter.getName());
             }
             catch (Exception e) {
@@ -135,17 +138,14 @@ public class ConsoleChooseCharacter {
     }
 
     private int getValidValue() {
-        String str = "";
-        while (true) {
-            while (str.equals("")) {
-                str = scanner.nextLine();
+        int value;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println("That's not a number!");
+                scanner.next();
             }
-            if (!str.matches("^[0-9]+")) {
-                System.err.println("Enter a valid value!");
-                str = "";
-            } else {
-                return Integer.parseInt(str);
-            }
-        }
+            value = scanner.nextInt();
+        } while (value < 0);
+        return value;
     }
 }

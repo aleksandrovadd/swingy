@@ -1,6 +1,5 @@
 package swingy;
 
-import java.io.IOException;
 import swingy.mvc.*;
 
 public class Main {

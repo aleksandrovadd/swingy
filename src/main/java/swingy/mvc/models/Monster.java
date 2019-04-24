@@ -3,6 +3,7 @@ package swingy.mvc.models;
 import java.awt.*;
 
 public class Monster {
+
     private int hp;
     private int attack;
     private int defense;
