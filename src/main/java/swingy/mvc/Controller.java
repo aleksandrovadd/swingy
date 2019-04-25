@@ -1,7 +1,7 @@
 package swingy.mvc;
 
 import swingy.bd.DataBase;
-import swingy.mvc.models.Artifact;
+import swingy.mvc.models.Artefact;
 import swingy.mvc.models.Monster;
 import swingy.mvc.models.MonsterBuilder;
 import swingy.mvc.views.*;
@@ -41,7 +41,7 @@ public class Controller {
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
             initNewGame();
         }
-        currentGui.drawGameObjects();
+        currentGui.drawObjects();
     }
 
     public void keyPressed(int key) {
@@ -49,7 +49,7 @@ public class Controller {
         handleCollisions();
 
         currentGui.updateData();
-        currentGui.viewRepaint();
+        currentGui.reDraw();
 
         if (sizeMap > 9)
             currentGui.scrollPositionManager();
@@ -57,35 +57,35 @@ public class Controller {
 
     public void saveCharacter() {
         if (currentGui.simpleDialog("Save your character?"))
-            DataBase.getDataBase().updateCharacter(character);
+            DataBase.getInstance().updateCharacter(character);
     }
 
     private void handleKey(int key) {
         switch (key) {
             case 37:
                 if (character.getPosition().x - 1 >= 0) {
-                    character.move(-1, 0);
+                    character.changePosition(-1, 0);
                 } else {
                     key = -1;
                 }
                 break;
             case 38:
                 if (character.getPosition().y - 1 >= 0) {
-                    character.move(0, -1);
+                    character.changePosition(0, -1);
                 } else {
                     key = -1;
                 }
                 break;
             case 39:
                 if (character.getPosition().x + 1 < sizeMap) {
-                    character.move(1, 0);
+                    character.changePosition(1, 0);
                 } else {
                     key = -1;
                 }
                 break;
             case 40:
                 if (character.getPosition().y + 1 < sizeMap) {
-                    character.move(0, 1);
+                    character.changePosition(0, 1);
                 } else {
                     key = -1;
                 }
@@ -121,7 +121,7 @@ public class Controller {
     }
 
     private void initNewGame() {
-        character.getPosition().setLocation( sizeMap >> 1, sizeMap >> 1);
+        character.getPosition().setLocation( sizeMap / 2, sizeMap / 2);
         character.setHitPoint( character.getMaxHp() );
 
         this.updateMonsters();
@@ -147,8 +147,8 @@ public class Controller {
             return;
         }
         if (monster.getHp() <= 0) {
-            character.setExp( character.getExp() + ( (monster.getAttack() + monster.getDefense()) << 3 ) );
-            currentGui.addLog("Monster was killed! Raised " + (monster.getAttack() + monster.getDefense() << 3) + " experience !" );
+            character.setExp( character.getExp() + ( (monster.getAttack() + monster.getDefense()) * 8 ) );
+            currentGui.addLog("Monster was killed! Raised " + (monster.getAttack() + monster.getDefense() * 8) + " experience !" );
             this.monsters.remove(monster);
             manageCharacter(monster);
         }
@@ -162,25 +162,25 @@ public class Controller {
             currentGui.addLog("Critical hit!!!");
         }
         else {
-            character.setHitPoint(character.getHitP() - (monster.getAttack() << 2) + character.getFinalDefense());
+            character.setHitPoint(character.getHitP() - (monster.getAttack() * 4) + character.getFinalDefense());
             if (checkDeath()) {
                 return;
             }
             monster.setHp( monster.getHp() - character.getFinalAttack() + monster.getDefense());
-            int raisedDamage = (monster.getAttack() << 2) - character.getFinalDefense();
+            int raisedDamage = (monster.getAttack() * 4) - character.getFinalDefense();
             currentGui.addLog("You caused " + (character.getFinalAttack() - monster.getDefense())
-                    + " damage to the monster !\n" + (raisedDamage < 0 ? " Blocked up all damage" : " Raised " + raisedDamage ) + " damage.");
+                    + " damage to the monster !\n" + (raisedDamage <= 0 ? " Blocked up all damage" : " Raised " + raisedDamage ) + " damage.");
         }
     }
 
     private void manageCharacter(Monster monster) {
         if (character.getExp() >= character.getNecessaryExp()) {
             currentGui.addLog("Level up ! Skills increased!");
-            character.setMaxHp( character.getMaxHp() + (4 << character.getLevel()) );
-            character.setHitPoint( character.getMaxHp() );
-            character.setAttack( character.getAttack() + (character.getLevel() << 2));
-            character.setDefense( character.getDefense() + (character.getLevel() << 1));
-            character.setLevel( character.getLevel() + 1 );
+            character.setMaxHp(character.getMaxHp() + (int) (Math.pow(2,(character.getLevel() + 2))));
+            character.setHitPoint(character.getMaxHp());
+            character.setAttack(character.getAttack() + (character.getLevel() * 4));
+            character.setDefense(character.getDefense() + (character.getLevel() * 2));
+            character.setLevel(character.getLevel() + 1);
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
             this.updateMonsters();
         }
@@ -224,9 +224,9 @@ public class Controller {
 
     private void manageArtifacts(Monster monster) {
         String artifact = rand.nextInt(2) == 0 ? "attack" : Constants.DEFENSE_STR;
-        int value = ((artifact.equals("attack") ? monster.getAttack() : monster.getDefense()) >> 1) + 1;
+        int value = ((artifact.equals("attack") ? monster.getAttack() : monster.getDefense()) / 2) + 1;
         if (currentGui.simpleDialog("Found " + artifact + " artifact (" + value + ") pick it up ?")) {
-            character.setArtifact( new Artifact(artifact, value) );
+            character.setArtefact( new Artefact(artifact, value) );
             currentGui.addLog("New artifact equipped");
         }
     }

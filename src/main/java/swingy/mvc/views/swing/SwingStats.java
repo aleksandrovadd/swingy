@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static swingy.util.Constants.*;
+
 public class SwingStats extends JPanel {
     private Character character;
     private Map<String, JLabel> stats;
@@ -20,6 +22,7 @@ public class SwingStats extends JPanel {
         this.character = character;
         stats = new HashMap<>();
 
+        setLayout(null);
         setSize(325, 500);
         setLocation(50, 50);
     }
@@ -35,7 +38,7 @@ public class SwingStats extends JPanel {
             prepareInfo();
         }
 
-        stats.get("name").setText("Name: " + (character.getName() == null ? "" : character.getName()) );
+        stats.get(NAME).setText("Name: " + (character.getName() == null ? "" : character.getName()) );
         stats.get("type").setText("Type: " + character.getType());
 
         if (character.getPosition() != null) {
@@ -45,29 +48,29 @@ public class SwingStats extends JPanel {
         stats.get("level").setText("Level: " + character.getLevel());
         stats.get("exp").setText("Exp: " + character.getExp() + "/" + character.getNecessaryExp());
         stats.get("attack").setText(String.valueOf(character.getAttack()));
-        stats.get(Constants.DEFENSE_STR).setText(" " + character.getDefense());
+        stats.get(DEFENSE_STR).setText(" " + character.getDefense());
         stats.get("hp").setText(" " + character.getHitP() + "/" + character.getMaxHp());
 
-        if (character.getArtifact() != null && !character.getArtifact().getType().equals("")) {
-            stats.get("artifact").setIcon(new ImageIcon(
-                    res + (character.getArtifact().getType().equals(Constants.ATTACK_STR) ? "artifactA.png" : "artifactD.png") ));
-            stats.get("artifact").setText(" " + character.getArtifact().getValue());
+        if (character.getArtefact() != null && !character.getArtefact().getType().equals("")) {
+            stats.get(ARTEFACT).setIcon(new ImageIcon(
+                    res + (character.getArtefact().getType().equals(ATTACK_STR) ? "artefact1.png" : "artefact2.png") ));
+            stats.get(ARTEFACT).setText(" " + character.getArtefact().getValue());
         }
         else {
-            stats.get("artifact").setText("");
-            stats.get("artifact").setIcon(null);
+            stats.get(ARTEFACT).setText("");
+            stats.get(ARTEFACT).setIcon(null);
         }
     }
 
     private void prepareInfo() {
         loadFont();
 
-        JLabel name = new JLabel("Name: ");
+        JLabel name = new JLabel(NAME + ": ");
         name.setLocation(20, 5);
         name.setSize(225, 75);
         name.setFont(font);
         if (character.getName() != null) {
-            name.setText("Name: " + character.getName());
+            name.setText(NAME + ": " + character.getName());
         }
 
         JLabel type = new JLabel("Type: " + character.getType());
@@ -88,10 +91,10 @@ public class SwingStats extends JPanel {
             location.setText("Location: [" + character.getPosition().x + ", " + character.getPosition().y + "]");
         }
 
-        JLabel exp = new JLabel("Exp: " + character.getExp() + "/" + character.getNecessaryExp() );
-        exp.setLocation(20, 205);
-        exp.setSize(320, 50);
-        exp.setFont(font);
+        JLabel experience = new JLabel("Exp: " + character.getExp() + "/" + character.getNecessaryExp() );
+        experience.setLocation(20, 205);
+        experience.setSize(320, 50);
+        experience.setFont(font);
 
         JLabel attack = new JLabel( String.valueOf(character.getAttack()), new ImageIcon(res + "sword.png"), JLabel.LEFT);
         attack.setLocation(20, 260);
@@ -103,38 +106,38 @@ public class SwingStats extends JPanel {
         defense.setSize(200, 50);
         defense.setFont(font);
 
-        JLabel hp = new JLabel( " " + character.getHitP() + "/" + this.character.getMaxHp(), new ImageIcon(res + "hp.png"), JLabel.LEFT);
-        hp.setLocation(15, 370);
-        hp.setSize(320, 50);
-        hp.setFont(font);
-        hp.setVerticalTextPosition(SwingConstants.TOP);
+        JLabel hitPoints = new JLabel( " " + character.getHitP() + "/" + this.character.getMaxHp(), new ImageIcon(res + "hp.png"), JLabel.LEFT);
+        hitPoints.setLocation(15, 370);
+        hitPoints.setSize(320, 50);
+        hitPoints.setFont(font);
+        hitPoints.setVerticalTextPosition(SwingConstants.TOP);
 
-        JLabel artifact = new JLabel("");
-        if (character.getArtifact() != null)
-            artifact.setIcon( new ImageIcon(res + (character.getArtifact().getType().equals(Constants.ATTACK_STR) ? "artifactA.png" : "artifactD.png")));
-        artifact.setLocation(15, 430);
-        artifact.setSize(200, 50);
-        artifact.setFont(font);
+        JLabel artefact = new JLabel("");
+        if (character.getArtefact() != null)
+            artefact.setIcon( new ImageIcon(res + (character.getArtefact().getType().equals(ATTACK_STR) ? "artefact1.png" : "artefact2.png")));
+        artefact.setLocation(15, 430);
+        artefact.setSize(200, 50);
+        artefact.setFont(font);
 
-        stats.put("name", name);
+        stats.put(NAME, name);
         stats.put("type", type);
         stats.put("level", level);
         stats.put("location", location);
-        stats.put(Constants.ATTACK_STR, attack);
-        stats.put(Constants.DEFENSE_STR, defense);
-        stats.put("hp", hp);
-        stats.put("exp", exp);
-        stats.put("artifact", artifact);
+        stats.put(ATTACK_STR, attack);
+        stats.put(DEFENSE_STR, defense);
+        stats.put("hp", hitPoints);
+        stats.put("exp", experience);
+        stats.put(ARTEFACT, artefact);
 
         add(name);
         add(type);
         add(level);
         add(location);
-        add(exp);
+        add(experience);
         add(attack);
         add(defense);
-        add(hp);
-        add(artifact);
+        add(hitPoints);
+        add(artefact);
     }
 
     private void loadFont() {

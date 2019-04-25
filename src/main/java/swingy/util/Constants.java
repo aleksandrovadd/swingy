@@ -8,6 +8,11 @@ public class Constants {
     public static final int REMOVE = 2;
     public static final int CANCEL = 3;
 
+    public static final int NORTH = 1;
+    public static final int WEST = 2;
+    public static final int EAST = 3;
+    public static final int SOUTH = 4;
+
     public static final int YES = 1;
     public static final int NO = 2;
 
@@ -38,5 +43,13 @@ public class Constants {
 
     public static final String DEFENSE_STR = "defense";
     public static final String ATTACK_STR = "attack";
+
+    public static final String EXIT_STR = "Exit";
+    public static final String NORTH_STR = "North";
+    public static final String EAST_STR = "East";
+    public static final String WEST_STR = "West";
+    public static final String SOUTH_STR = "South";
+
+    public static final String ARTEFACT = "artefact";
 
 }

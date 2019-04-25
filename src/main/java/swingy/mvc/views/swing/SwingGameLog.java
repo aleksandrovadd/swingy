@@ -9,11 +9,10 @@ public class SwingGameLog extends JTextArea {
     private Font font;
 
     SwingGameLog() {
-        font = null;
         setLayout(null);
         setAutoscrolls(true);
-        setBackground(Color.gray);
-        setForeground( new Color(124, 252, 0) );
+        setBackground(Color.pink);
+        setForeground(new Color(84, 10, 143));
 
         setEditable(false);
         setFocusable(false);

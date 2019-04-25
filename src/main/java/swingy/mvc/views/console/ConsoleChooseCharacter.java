@@ -22,8 +22,8 @@ class ConsoleChooseCharacter {
     Character getCharacter() throws Exception {
         int value;
 
-        DataBase.getDataBase().connectDb();
-        names = DataBase.getDataBase().getNames();
+        DataBase.getInstance().connectDatabase();
+        names = DataBase.getInstance().getNames();
 
         while (character == null) {
             System.out.println("0) Exit\n1) Select previously created character\n2) Create new character");
@@ -53,21 +53,20 @@ class ConsoleChooseCharacter {
                 return;
             }
             System.out.println("0) come back");
-            for (String name : names)
+            for (String name : names) {
                 System.out.println(++index + ") " + name);
-
-            if ((value = getValidValue()) == 0)
+            }
+            if ((value = getValidValue()) == 0) {
                 break;
-            else if (value <= index) {
-                System.out.println(DataBase.getDataBase().getCharacter(names.get(value - 1)).getInfo());
+            } else if (value <= index) {
+                System.out.println(DataBase.getInstance().selectCharacter(names.get(value - 1)).toString());
                 System.out.printf("\nMake choice: 1) %s   2) %s   3) %s", SELECT_STR, REMOVE_STR, CANCEL_STR);
                 int choice = getValidValue();
                 if (choice == SELECT) {
-                    character = DataBase.getDataBase().getCharacter(names.get(value - 1));
-                }
-                else if (choice == REMOVE) {
+                    character = DataBase.getInstance().selectCharacter(names.get(value - 1));
+                } else if (choice == REMOVE) {
                     try {
-                        DataBase.getDataBase().remove( names.get(value - 1) );
+                        DataBase.getInstance().deleteCharacter( names.get(value - 1) );
                         names.remove(value - 1);
                     }
                     catch (Exception e) {
@@ -108,7 +107,7 @@ class ConsoleChooseCharacter {
         String characterName = "";
         String error = "";
         Character newCharacter = CharacterBuilder.buildByType(type);
-        System.out.println(newCharacter.getInfo() + "\nCreate character?  1) Yes   2) No");
+        System.out.println(newCharacter.toString() + "\nCreate character?  1) Yes   2) No");
         int value = getValidValue();
         if (value == YES) {
             while (error != null) {
@@ -128,8 +127,8 @@ class ConsoleChooseCharacter {
                 characterName = "";
             }
             try {
-                DataBase.getDataBase().addNewCharacter(newCharacter);
-                this.names.add(newCharacter.getName());
+                DataBase.getInstance().insertCharacter(newCharacter);
+                names.add(newCharacter.getName());
             }
             catch (Exception e) {
                 e.printStackTrace();
