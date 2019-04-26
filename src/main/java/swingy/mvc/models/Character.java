@@ -7,8 +7,8 @@ import javax.validation.constraints.Pattern;
 import java.awt.*;
 
 public class Character {
-    @Pattern(regexp = "^[0-9A-Za-z]+", message = "Only digits and letters in name")
-    @Size(min = 3, max = 12, message = "Size of name must be 3-12 symbols length")
+    @Pattern(regexp = "^[0-9A-Za-z]+", message = "Only letters and digits in name")
+    @Size(min = 3, max = 12, message = "Length of name must be 3-12 symbols")
     private String name;
     private String type;
     private int level = 1;
@@ -61,39 +61,39 @@ public class Character {
         return defense;
     }
 
-    public static class Builder {
+    static class Builder {
         private Character character;
 
-        public Builder() {
+        Builder() {
             character = new Character();
         }
 
-        public Builder withType(String type) {
+        Builder withType(String type) {
             character.setType(type);
             return this;
         }
 
-        public Builder withAttack(int attack) {
+        Builder withAttack(int attack) {
             character.setAttack(attack);
             return this;
         }
 
-        public Builder withDefense(int defense) {
+        Builder withDefense(int defense) {
             character.setDefense(defense);
             return this;
         }
 
-        public Builder withMaxHp(int maxHp) {
+        Builder withMaxHp(int maxHp) {
             character.setMaxHp(maxHp);
             return this;
         }
 
-        public Builder withHitPoint(int hitPoint) {
+        Builder withHitPoint(int hitPoint) {
             character.setHitPoint(hitPoint);
             return this;
         }
 
-        public Character build() {
+        Character build() {
             return character;
         }
 
@@ -174,10 +174,6 @@ public class Character {
     public void setPosition(Point position) {
         this.position = position;
     }
-
-//    public void setPreviousPosition(Point previousPosition) {
-//        this.previousPosition = previousPosition;
-//    }
 
     public void setArtefact(Artefact artefact) {
         this.artefact = artefact;

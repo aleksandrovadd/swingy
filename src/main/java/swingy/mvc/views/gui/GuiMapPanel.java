@@ -1,4 +1,4 @@
-package swingy.mvc.views.swing;
+package swingy.mvc.views.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import swingy.mvc.Controller;
 import swingy.mvc.models.Monster;
 
-public class SwingMapPanel extends JPanel {
+public class GuiMapPanel extends JPanel {
     private Controller controller;
     private int sizeSquare;
 
-    SwingMapPanel(Controller controller, int sizeSquare) {
+    GuiMapPanel(Controller controller, int sizeSquare) {
         this.controller = controller;
         this.sizeSquare = sizeSquare;
         setLayout(null);
@@ -19,21 +19,21 @@ public class SwingMapPanel extends JPanel {
     }
 
     @Override
-    public void  paint(Graphics g) {
-        super.paint(g);
+    public void paint(Graphics graphics) {
+        super.paint(graphics);
 
-        Graphics2D g2 = (Graphics2D)g;
+        Graphics2D graphics2D = (Graphics2D) graphics;
 
-        drawMap(g2);
-        drawCharacter(g2);
-        drawEnemies(g2);
+        drawMap(graphics2D);
+        drawCharacter(graphics2D);
+        drawEnemies(graphics2D);
     }
 
     private void drawMap(Graphics2D g2) {
-        setPreferredSize( new Dimension(sizeSquare * controller.getSizeMap(), sizeSquare * controller.getSizeMap()) );
+        setPreferredSize(new Dimension(sizeSquare * controller.getSizeMap(), sizeSquare * controller.getSizeMap()));
         for (int i = 0; i < controller.getSizeMap(); i++) {
-            for (int j = 0; j < controller.getSizeMap(); j++) {
-                g2.drawRect(sizeSquare * j, sizeSquare * i, sizeSquare, sizeSquare);
+            for (int k = 0; k < controller.getSizeMap(); k++) {
+                g2.drawRect(sizeSquare * k, sizeSquare * i, sizeSquare, sizeSquare);
             }
         }
     }
@@ -42,20 +42,19 @@ public class SwingMapPanel extends JPanel {
         Image img = getToolkit().getImage("resources/characters/" + controller.getCharacter().getType() + ".png");
         prepareImage(img, this);
 
-        g2.setColor(new Color(101, 255, 0, 75));
+        g2.setColor(new Color(100, 254, 1, 75));
         g2.fillRect(controller.getCharacter().getPosition().x * sizeSquare, controller.getCharacter().getPosition().y * sizeSquare, sizeSquare, sizeSquare);
         g2.drawImage(img, controller.getCharacter().getPosition().x * sizeSquare + (sizeSquare / 4), controller.getCharacter().getPosition().y * sizeSquare, this);
     }
 
     private void drawEnemies(Graphics2D g2) {
         ArrayList<Monster> monsters = controller.getMonsters();
-        Image myimg;
 
         for (Monster monster : monsters) {
-            myimg = getToolkit().getImage("resources/characters/monster" + monster.getNumImg() + ".png");
+            Image monsterImage = getToolkit().getImage("resources/characters/monster" + monster.getNumImg() + ".png");
 
-            prepareImage(myimg, this);
-            g2.drawImage(myimg, monster.getPosition().x * sizeSquare + (sizeSquare  / 4), monster.getPosition().y * sizeSquare, this);
+            prepareImage(monsterImage, this);
+            g2.drawImage(monsterImage, monster.getPosition().x * sizeSquare + (sizeSquare  / 4), monster.getPosition().y * sizeSquare, this);
         }
     }
 }

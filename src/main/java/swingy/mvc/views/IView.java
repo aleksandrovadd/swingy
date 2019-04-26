@@ -8,7 +8,7 @@ public interface IView {
     void updateData();
     void addLog(String text);
 
-    boolean simpleDialog(String message);
+    boolean yesNoDialog(String message);
     String getViewType();
     void close();
 }

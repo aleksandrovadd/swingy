@@ -11,7 +11,7 @@ import static swingy.util.Constants.*;
 
 class ConsoleChooseCharacter {
 
-    private List<String> names;
+    private List<String> characterNames;
     private Character character;
     private Scanner scanner;
 
@@ -20,15 +20,15 @@ class ConsoleChooseCharacter {
     }
 
     Character getCharacter() throws Exception {
-        int value;
+        int inputValue;
 
         DataBase.getInstance().connectDatabase();
-        names = DataBase.getInstance().getNames();
+        characterNames = DataBase.getInstance().getNames();
 
         while (character == null) {
             System.out.println("0) Exit\n1) Select previously created character\n2) Create new character");
-            value = getValidValue();
-            switch (value) {
+            inputValue = getValidValue();
+            switch (inputValue) {
                 case EXIT:
                     System.exit(0);
                 case CHOOSE_PREVIOUS_CHARACTER:
@@ -44,30 +44,30 @@ class ConsoleChooseCharacter {
 
     private void previousCharactersManager() throws Exception {
         int index;
-        int value;
+        int inputValue;
 
         while (true) {
             index = 0;
-            if (names.size() == 0) {
+            if (characterNames.size() == 0) {
                 System.out.println("You don't have characters, create them.");
                 return;
             }
-            System.out.println("0) come back");
-            for (String name : names) {
+            System.out.println("0) back");
+            for (String name : characterNames) {
                 System.out.println(++index + ") " + name);
             }
-            if ((value = getValidValue()) == 0) {
+            if ((inputValue = getValidValue()) == 0) {
                 break;
-            } else if (value <= index) {
-                System.out.println(DataBase.getInstance().selectCharacter(names.get(value - 1)).toString());
+            } else if (inputValue <= index) {
+                System.out.println(DataBase.getInstance().selectCharacter(characterNames.get(inputValue - 1)).toString());
                 System.out.printf("\nMake choice: 1) %s   2) %s   3) %s", SELECT_STR, REMOVE_STR, CANCEL_STR);
                 int choice = getValidValue();
                 if (choice == SELECT) {
-                    character = DataBase.getInstance().selectCharacter(names.get(value - 1));
+                    character = DataBase.getInstance().selectCharacter(characterNames.get(inputValue - 1));
                 } else if (choice == REMOVE) {
                     try {
-                        DataBase.getInstance().deleteCharacter( names.get(value - 1) );
-                        names.remove(value - 1);
+                        DataBase.getInstance().deleteCharacter( characterNames.get(inputValue - 1) );
+                        characterNames.remove(inputValue - 1);
                     }
                     catch (Exception e) {
                         e.printStackTrace();
@@ -104,19 +104,19 @@ class ConsoleChooseCharacter {
     }
 
     private void createNewCharacter(String type) {
-        String characterName = "";
-        String error = "";
+        String characterName = EMPTY_STRING;
+        String error = EMPTY_STRING;
         Character newCharacter = CharacterBuilder.buildByType(type);
         System.out.println(newCharacter.toString() + "\nCreate character?  1) Yes   2) No");
-        int value = getValidValue();
-        if (value == YES) {
+        int inputValue = getValidValue();
+        if (inputValue == YES) {
             while (error != null) {
                 System.out.print("Enter name: ");
-                while (characterName.equals("")) {
+                while (characterName.equals(EMPTY_STRING)) {
                     characterName = scanner.nextLine();
                 }
                 error = CharacterBuilder.setName(newCharacter, characterName);
-                for (String name : names) {
+                for (String name : characterNames) {
                     if (name.equals(characterName)) {
                         error = "Character with such name already exists";
                     }
@@ -124,11 +124,11 @@ class ConsoleChooseCharacter {
                 if (error != null) {
                     System.err.println(error);
                 }
-                characterName = "";
+                characterName = EMPTY_STRING;
             }
             try {
                 DataBase.getInstance().insertCharacter(newCharacter);
-                names.add(newCharacter.getName());
+                characterNames.add(newCharacter.getName());
             }
             catch (Exception e) {
                 e.printStackTrace();

@@ -1,8 +1,7 @@
-package swingy.mvc.views.swing;
+package swingy.mvc.views.gui;
 
 import swingy.mvc.Controller;
 import swingy.mvc.views.IView;
-import swingy.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,24 +10,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class SwingView extends JFrame implements IView
+import static swingy.util.Constants.*;
+
+public class GuiView extends JFrame implements IView
 {
     private Controller controller;
-    private KeyAdapter keySupporter;
     private JPanel panel;
-    private SwingMapPanel map;
     private JScrollPane scrollMap;
     private JScrollPane scrollGameLog;
 
     private int squareSize;
 
-    private SwingStats stats;
-    private SwingGameLog gameLog;
+    private GuiAttributes stats;
+    private GuiGameJournal gameLog;
 
-    private String type;
-
-    public SwingView(Controller controller) {
+    public GuiView(Controller controller) {
         super("Swingy");
+        this.controller = controller;
 
         setBounds(500, 250, 1200, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,8 +40,7 @@ public class SwingView extends JFrame implements IView
             }
         });
 
-        this.controller = controller;
-        keySupporter = new KeySupporter();
+        KeyAdapter keySupporter = new KeyHandler();
         setVisible(true);
         setFocusable(true);
 
@@ -55,21 +52,19 @@ public class SwingView extends JFrame implements IView
         squareSize = 70;
 
         setContentPane(panel);
-
-        type = Constants.GUI_STR;
         addKeyListener(keySupporter);
     }
 
     @Override
     public void ChooseCharacter() throws Exception {
-        controller.setCharacter(new SwingChooseCharacter(panel).ChooseCharacter());
+        controller.setCharacter(new GuiChooseCharacter(panel).ChooseCharacter());
     }
 
     @Override
     public void drawObjects() {
         initScrolls();
-        stats = new SwingStats(controller.getCharacter());
-        stats.updateData();
+        stats = new GuiAttributes(controller.getCharacter());
+        stats.notifyData();
 
         panel.add(scrollGameLog);
         panel.add(stats);
@@ -102,20 +97,20 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public boolean simpleDialog(String message) {
+    public boolean yesNoDialog(String message) {
         int dialogButton = JOptionPane.YES_NO_OPTION;
-        int dialogResult = JOptionPane.showConfirmDialog(this, message, "You have a choice", dialogButton);
+        int dialogResult = JOptionPane.showConfirmDialog(this, message, "Make a choice", dialogButton);
 
         return dialogResult == 0;
     }
 
     @Override
     public void updateData() {
-        stats.updateData();
+        stats.notifyData();
     }
 
     @Override
-    public String getViewType() { return type; }
+    public String getViewType() { return GUI_STR; }
 
     @Override
     public void close() {
@@ -124,7 +119,7 @@ public class SwingView extends JFrame implements IView
     }
 
     private void initScrolls() {
-        map = new SwingMapPanel(controller, squareSize);
+        GuiMapPanel map = new GuiMapPanel(controller, squareSize);
         scrollMap = new JScrollPane(map);
 
         scrollMap.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -134,7 +129,7 @@ public class SwingView extends JFrame implements IView
                 controller.getCharacter().getPosition().x * 70 - 275) );
         scrollMap.repaint();
 
-        gameLog = new SwingGameLog();
+        gameLog = new GuiGameJournal();
         scrollGameLog = new JScrollPane(gameLog);
         scrollGameLog.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollGameLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -142,15 +137,15 @@ public class SwingView extends JFrame implements IView
         scrollGameLog.repaint();
     }
 
-    private class KeySupporter extends KeyAdapter {
+    private class KeyHandler extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
             if (controller.getCharacter() != null) {
-                if ((e.getKeyCode() >= 37 && e.getKeyCode() <= 40)) {
+                if ((e.getKeyCode() >= KEY_WEST && e.getKeyCode() <= KEY_SOUTH)) {
                     controller.keyPressed(e.getKeyCode());
                 }
                 else if (e.getKeyCode() == 49) {
-                    controller.keyPressed(-2);
+                    controller.keyPressed(GUI_SWITCH);
                 }
             }
         }

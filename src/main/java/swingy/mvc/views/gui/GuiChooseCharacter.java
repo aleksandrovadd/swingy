@@ -1,4 +1,4 @@
-package swingy.mvc.views.swing;
+package swingy.mvc.views.gui;
 
 import swingy.bd.DataBase;
 
@@ -18,23 +18,24 @@ import swingy.util.Constants;
 
 import static swingy.util.Constants.*;
 
-class SwingChooseCharacter {
+class GuiChooseCharacter {
+
     private JPanel panel;
     private JTextField inputName;
     private JComboBox characterTypes;
-    private JComboBox previousCharacters;
-    private SwingStats stats;
+    private JComboBox<String> previousCharacters;
+    private GuiAttributes attributes;
     private Character selectedCharacter;
 
     private Map<String, JLabel> labels;
     private Map<String, JButton> buttons;
     private Font[] fonts;
 
-    SwingChooseCharacter(JPanel panel) {
+    GuiChooseCharacter(JPanel panel) {
         this.panel = panel;
-        inputName = new JTextField("", 5);
+        inputName = new JTextField(EMPTY_STRING, 5);
 
-        String[] nameTypes = {WARRIOR_TYPE, MAGE_TYPE, ROGUE_TYPE};
+        String[] nameTypes = { WARRIOR_TYPE, MAGE_TYPE, ROGUE_TYPE };
 
         characterTypes = new JComboBox<>(nameTypes);
         previousCharacters = new JComboBox<>();
@@ -54,7 +55,7 @@ class SwingChooseCharacter {
     Character ChooseCharacter() throws Exception {
         DataBase.getInstance().connectDatabase();
 
-        prepareObjects();
+        setupObjects();
         addObjOnFrame();
 
         panel.revalidate();
@@ -71,15 +72,15 @@ class SwingChooseCharacter {
         return selectedCharacter;
     }
 
-    private void prepareObjects() throws Exception {
+    private void setupObjects() throws Exception {
         loadFonts();
-        prepareLabels();
-        prepareNameField();
-        prepareBoxes();
+        setupLabels();
+        setupNameField();
+        setupBoxes();
         prepareButtons();
     }
 
-    private void    prepareLabels() {
+    private void setupLabels() {
         labels.get(NAME).setLocation(950, 50);
         labels.get(NAME).setSize(150, 100);
         labels.get(NAME).setFont(fonts[0]);
@@ -89,19 +90,21 @@ class SwingChooseCharacter {
         labels.get(OLD).setFont(fonts[0]);
     }
 
-    private void prepareNameField() {
+    private void setupNameField() {
         inputName.setLocation(900, 125);
         inputName.setSize(150, 35);
         inputName.setFont(fonts[1]);
     }
 
-    private void prepareBoxes() throws Exception {
+    private void setupBoxes() throws Exception {
         characterTypes.setLocation(898, 175);
         characterTypes.setSize(160, 50);
         characterTypes.addItemListener (
                 (ItemEvent e) -> {
-                    stats.setCharacter(CharacterBuilder.buildByType((String) characterTypes.getSelectedItem() ));
-                    stats.updateData();
+                    if (characterTypes.getSelectedItem() != null) {
+                        attributes.setCharacter(CharacterBuilder.buildByType((String) characterTypes.getSelectedItem()));
+                        attributes.notifyData();
+                    }
                 }
         );
 
@@ -115,36 +118,35 @@ class SwingChooseCharacter {
                 (ItemEvent e) -> {
                     try {
                         Character newCharacter = DataBase.getInstance().selectCharacter((String) previousCharacters.getSelectedItem() );
-                        if (newCharacter == null)
-                            newCharacter = CharacterBuilder.buildByType((String) characterTypes.getSelectedItem() );
+                        if (newCharacter == null) {
+                            newCharacter = CharacterBuilder.buildByType((String) characterTypes.getSelectedItem());
+                        }
 
-                        stats.setCharacter(newCharacter);
-                        stats.updateData();
-                    }
-                    catch (Exception e1) {
+                        attributes.setCharacter(newCharacter);
+                        attributes.notifyData();
+                    } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                 }
         );
 
-        stats = new SwingStats(names.size() != 0 ? DataBase.getInstance().selectCharacter((String) previousCharacters.getSelectedItem()) :
+        attributes = new GuiAttributes(names.size() != 0 ? DataBase.getInstance().selectCharacter((String) previousCharacters.getSelectedItem()) :
                 CharacterBuilder.buildByType((String) characterTypes.getSelectedItem()) );
-        stats.setLocation(400, 400);
+        attributes.setLocation(400, 400);
     }
 
-    private void    prepareButtons() {
+    private void prepareButtons() {
         buttons.get(CREATE).setLocation(875, 250);
         buttons.get(CREATE).setSize(210, 25);
-        buttons.get(CREATE).addActionListener( (ActionEvent e) -> this.createNewCharacter() );
+        buttons.get(CREATE).addActionListener( (ActionEvent e) -> this.createNewCharacter());
         buttons.get(CREATE).setFont(fonts[1]);
 
         buttons.get(SELECT_STR).setLocation(75, 250);
         buttons.get(SELECT_STR).setSize(100, 25);
         buttons.get(SELECT_STR).addActionListener( (ActionEvent e) -> {
-            if (previousCharacters.getItemCount() == 0 ) {
+            if (previousCharacters.getItemCount() == 0) {
                 JOptionPane.showMessageDialog(panel, "You do not have any character, create him.");
-            }
-            else {
+            } else {
                 selectCharacter();
                 panel.removeAll();
             }
@@ -163,7 +165,7 @@ class SwingChooseCharacter {
         panel.add(inputName);
         panel.add(characterTypes);
         panel.add(previousCharacters);
-        panel.add(stats);
+        panel.add(attributes);
         panel.add(buttons.get(CREATE));
         panel.add(buttons.get(SELECT_STR));
         panel.add(buttons.get(REMOVE_STR));
@@ -174,8 +176,8 @@ class SwingChooseCharacter {
         inputName.repaint();
         characterTypes.repaint();
         previousCharacters.repaint();
-        stats.repaint();
-        stats.updateData();
+        attributes.repaint();
+        attributes.notifyData();
         buttons.get(CREATE).repaint();
         buttons.get(SELECT_STR).repaint();
         buttons.get(REMOVE_STR).repaint();
@@ -191,24 +193,25 @@ class SwingChooseCharacter {
     }
 
     private void createNewCharacter() {
-        Character newCharacter = CharacterBuilder.buildByType((String) characterTypes.getSelectedItem() );
-        String error = CharacterBuilder.setName(newCharacter, inputName.getText() );
+        if (characterTypes.getSelectedItem() != null) {
+            Character newCharacter = CharacterBuilder.buildByType((String) characterTypes.getSelectedItem());
+            String error = CharacterBuilder.setName(newCharacter, inputName.getText());
 
-        for (int i = 0; i < previousCharacters.getItemCount(); i++) {
-            if (previousCharacters.getItemAt(i).equals(inputName.getText())) {
-                error = "Character with that name already created";
+            for (int i = 0; i < previousCharacters.getItemCount(); i++) {
+                if (previousCharacters.getItemAt(i).equals(inputName.getText())) {
+                    error = "Character with that name already created";
+                }
             }
-        }
-        if (error != null)
-            JOptionPane.showMessageDialog(panel, error);
-        else {
-            try {
-                DataBase.getInstance().insertCharacter(newCharacter);
-                previousCharacters.addItem(inputName.getText());
-                inputName.setText("");
-            }
-            catch (Exception e) {
-                e.printStackTrace();
+            if (error != null)
+                JOptionPane.showMessageDialog(panel, error);
+            else {
+                try {
+                    DataBase.getInstance().insertCharacter(newCharacter);
+                    previousCharacters.addItem(inputName.getText());
+                    inputName.setText(EMPTY_STRING);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -218,8 +221,7 @@ class SwingChooseCharacter {
         try {
             DataBase.getInstance().deleteCharacter((String)removeCharacter);
             previousCharacters.removeItem(removeCharacter);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -1,8 +1,7 @@
-package swingy.mvc.views.swing;
+package swingy.mvc.views.gui;
 
 import javax.swing.*;
 import swingy.mvc.models.Character;
-import swingy.util.Constants;
 
 import java.awt.*;
 import java.io.File;
@@ -12,13 +11,13 @@ import java.util.Map;
 
 import static swingy.util.Constants.*;
 
-public class SwingStats extends JPanel {
+public class GuiAttributes extends JPanel {
     private Character character;
     private Map<String, JLabel> stats;
     private Font font;
     private String res = "resources/icons/";
 
-    SwingStats(Character character) {
+    GuiAttributes(Character character) {
         this.character = character;
         stats = new HashMap<>();
 
@@ -33,7 +32,7 @@ public class SwingStats extends JPanel {
         g.drawRect(1, 1, 323, 498);
     }
 
-    void updateData() {
+    void notifyData() {
         if (stats.size() == 0) {
             prepareInfo();
         }

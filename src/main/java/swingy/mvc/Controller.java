@@ -9,25 +9,24 @@ import swingy.mvc.views.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import swingy.mvc.models.Character;
 import swingy.mvc.views.console.*;
-import swingy.mvc.views.swing.*;
+import swingy.mvc.views.gui.*;
 import swingy.util.Constants;
+
+import static swingy.util.Constants.*;
 
 public class Controller {
     private IView currentGui;
 
     private Character character;
-    private int sizeMap;
+    private int sizeMap = 0;
     private ArrayList<Monster> monsters;
-    private Random rand;
 
     public Controller() {
         monsters = new ArrayList<>();
-        sizeMap = 0;
-        rand = new Random();
         currentGui = null;
     }
 
@@ -39,7 +38,7 @@ public class Controller {
         if (character == null) {
             currentGui.ChooseCharacter();
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
-            initNewGame();
+            setupNewGame();
         }
         currentGui.drawObjects();
     }
@@ -56,41 +55,41 @@ public class Controller {
     }
 
     public void saveCharacter() {
-        if (currentGui.simpleDialog("Save your character?"))
+        if (currentGui.yesNoDialog("Save your character?"))
             DataBase.getInstance().updateCharacter(character);
     }
 
     private void handleKey(int key) {
         switch (key) {
-            case 37:
+            case KEY_WEST:
                 if (character.getPosition().x - 1 >= 0) {
                     character.changePosition(-1, 0);
                 } else {
-                    key = -1;
+                    key = DEFAULT_INT;
                 }
                 break;
-            case 38:
+            case KEY_NORTH:
                 if (character.getPosition().y - 1 >= 0) {
                     character.changePosition(0, -1);
                 } else {
-                    key = -1;
+                    key = DEFAULT_INT;
                 }
                 break;
-            case 39:
+            case KEY_EAST:
                 if (character.getPosition().x + 1 < sizeMap) {
                     character.changePosition(1, 0);
                 } else {
-                    key = -1;
+                    key = DEFAULT_INT;
                 }
                 break;
-            case 40:
+            case KEY_SOUTH:
                 if (character.getPosition().y + 1 < sizeMap) {
                     character.changePosition(0, 1);
                 } else {
-                    key = -1;
+                    key = DEFAULT_INT;
                 }
                 break;
-            case -2:
+            case GUI_SWITCH:
                 try {
                     String type = currentGui.getViewType().equals(Constants.GUI_STR) ? Constants.CONSOLE_STR : Constants.GUI_STR;
                     currentGui.close();
@@ -101,11 +100,10 @@ public class Controller {
                 break;
         }
 
-        if (key == -1) {
-            if (currentGui.simpleDialog("End of the map, start a new game?")) {
-                initNewGame();
-            }
-            else {
+        if (key == DEFAULT_INT) {
+            if (currentGui.yesNoDialog("End of the map, start a new game?")) {
+                setupNewGame();
+            } else {
                 saveCharacter();
                 System.exit(0);
             }
@@ -115,30 +113,29 @@ public class Controller {
     private void handleCollisions() {
         for (int i = 0; i < monsters.size(); i++) {
             if (monsters.get(i).getPosition().equals(character.getPosition())) {
-                manageBattle(monsters.get(i));
+                startBattle(monsters.get(i));
             }
         }
     }
 
-    private void initNewGame() {
+    private void setupNewGame() {
         character.getPosition().setLocation( sizeMap / 2, sizeMap / 2);
         character.setHitPoint( character.getMaxHp() );
 
-        this.updateMonsters();
+        updateMonsters();
     }
 
-    private void manageBattle(Monster monster) {
+    private void startBattle(Monster monster) {
         Point monsterPosition = monster.getPosition();
         currentGui.addLog("You met an monster:\n    hp: " + monster.getHp() + "\n    attack: "
                 + monster.getAttack() + "\n    defense: " + monster.getDefense());
-        if (currentGui.simpleDialog("Do you want to attack him?")) {
+        if (currentGui.yesNoDialog("Do you want to attack him?")) {
             battleAlgorithm(monster);
         } else {
-            if (rand.nextInt(2) % 2 == 0) {
+            if (ThreadLocalRandom.current().nextInt(2) % 2 == 0) {
                 character.setPosition(new Point(character.getPreviousPosition()));
                 currentGui.addLog("You are lucky to escape");
-            }
-            else {
+            } else {
                 currentGui.addLog("You failed to run away");
                 battleAlgorithm(monster);
             }
@@ -147,21 +144,20 @@ public class Controller {
             return;
         }
         if (monster.getHp() <= 0) {
-            character.setExp( character.getExp() + ( (monster.getAttack() + monster.getDefense()) * 8 ) );
-            currentGui.addLog("Monster was killed! Raised " + (monster.getAttack() + monster.getDefense() * 8) + " experience !" );
-            this.monsters.remove(monster);
-            manageCharacter(monster);
-        }
-        else
+            character.setExp(character.getExp() + ((monster.getAttack() + monster.getDefense()) * 8 ));
+            currentGui.addLog("Monster was killed! Raised " + (monster.getAttack() + monster.getDefense() * 8) + " experience !");
+            monsters.remove(monster);
+            handleCharacter(monster);
+        } else {
             character.setPosition(new Point(character.getPreviousPosition()));
+        }
     }
 
     private void battleAlgorithm(Monster monster) {
-        if (rand.nextInt(7) == 6) {
+        if (ThreadLocalRandom.current().nextInt(7) == 6) {
             monster.setHp(0);
             currentGui.addLog("Critical hit!!!");
-        }
-        else {
+        } else {
             character.setHitPoint(character.getHitP() - (monster.getAttack() * 4) + character.getFinalDefense());
             if (checkDeath()) {
                 return;
@@ -173,7 +169,7 @@ public class Controller {
         }
     }
 
-    private void manageCharacter(Monster monster) {
+    private void handleCharacter(Monster monster) {
         if (character.getExp() >= character.getNecessaryExp()) {
             currentGui.addLog("Level up ! Skills increased!");
             character.setMaxHp(character.getMaxHp() + (int) (Math.pow(2,(character.getLevel() + 2))));
@@ -182,16 +178,16 @@ public class Controller {
             character.setDefense(character.getDefense() + (character.getLevel() * 2));
             character.setLevel(character.getLevel() + 1);
             sizeMap = (character.getLevel() - 1) * 5 + 10 - (character.getLevel() % 2);
-            this.updateMonsters();
+            updateMonsters();
         }
-        manageBonuses(monster);
+        handleBonuses(monster);
     }
 
     private boolean checkDeath() {
         if (character.getHitP() <= 0 ) {
             currentGui.updateData();
-            if (currentGui.simpleDialog("You have failed, you died, respawn at the center of map ?")) {
-                initNewGame();
+            if (currentGui.yesNoDialog("You have failed, you died, respawn at the center of map ?")) {
+                setupNewGame();
             } else {
                 saveCharacter();
                 System.exit(0);
@@ -201,38 +197,38 @@ public class Controller {
         return false;
     }
 
-    private void manageBonuses(Monster monster) {
-        if (rand.nextInt(3) == 2) {
-            if (rand.nextInt(2) == 0) {
-                int up = rand.nextInt(80) + 10;
+    private void handleBonuses(Monster monster) {
+        if (ThreadLocalRandom.current().nextInt(3) == 2) {
+            if (ThreadLocalRandom.current().nextInt(2) == 0) {
+                int up = ThreadLocalRandom.current().nextInt(10, 90);
                 character.setHitPoint(character.getHitP() + up);
                 currentGui.addLog("Health elixir was found + " + up + " hp!");
-            }
-            else {
+            } else {
                 manageArtifacts(monster);
             }
         }
     }
 
     private void updateMonsters() {
-        this.monsters.clear();
+        monsters.clear();
         MonsterBuilder monsterBuilder = new MonsterBuilder();
-        for (int i = rand.nextInt(sizeMap) + sizeMap; i > 0; i--) {
-            this.monsters.add(monsterBuilder.buildMonster(sizeMap, monsters, character));
+        int i = ThreadLocalRandom.current().nextInt(sizeMap, sizeMap + sizeMap);
+        for (; i > 0; i--) {
+            monsters.add(monsterBuilder.buildMonster(sizeMap, monsters, character));
         }
     }
 
     private void manageArtifacts(Monster monster) {
-        String artifact = rand.nextInt(2) == 0 ? "attack" : Constants.DEFENSE_STR;
+        String artifact = ThreadLocalRandom.current().nextInt(2) == 0 ? "attack" : Constants.DEFENSE_STR;
         int value = ((artifact.equals("attack") ? monster.getAttack() : monster.getDefense()) / 2) + 1;
-        if (currentGui.simpleDialog("Found " + artifact + " artifact (" + value + ") pick it up ?")) {
+        if (currentGui.yesNoDialog("Found " + artifact + " artifact (" + value + ") pick it up ?")) {
             character.setArtefact( new Artefact(artifact, value) );
             currentGui.addLog("New artifact equipped");
         }
     }
 
     private void changeGui(String guiName) {
-        currentGui = guiName.equals(Constants.GUI_STR) ? new SwingView(this) : new ConsoleView(this);
+        currentGui = guiName.equals(Constants.GUI_STR) ? new GuiView(this) : new ConsoleView(this);
     }
 
     public Character getCharacter() {

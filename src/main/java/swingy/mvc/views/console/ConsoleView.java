@@ -13,14 +13,14 @@ public class ConsoleView implements IView
     private Controller controller;
     private Scanner scanner;
     private ArrayList<char[]> map;
-    private int numStat;
+    private int numAttributes;
     private String type;
 
     public ConsoleView(Controller controller) {
         this.controller = controller;
         scanner = new Scanner(System.in);
         map = new ArrayList<>();
-        numStat = 0;
+        numAttributes = 0;
         type = CONSOLE_STR;
     }
 
@@ -32,8 +32,8 @@ public class ConsoleView implements IView
     @Override
     public void drawObjects() {
         drawMap();
-        System.out.println("\n0) " + EXIT_STR + "\n\n     1) " + NORTH_STR + "\n2) " + WEST_STR +
-                "     3) " + EAST_STR + "\n     4) " + SOUTH_STR + "\n " + GUI_STR + " - for gui-mode");
+        System.out.println("\n0) " + EXIT_STR + "\n\n    1) " + NORTH_STR + "\n2) " + WEST_STR +
+                "    3) " + EAST_STR + "\n    4) " + SOUTH_STR + "\n " + GUI_STR + " - for gui-mode");
         controller.keyPressed(getValidValue());
     }
 
@@ -43,8 +43,8 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public boolean simpleDialog(String message) {
-        System.out.println(message + "\n 1) Yes     2) No");
+    public boolean yesNoDialog(String message) {
+        System.out.println(message + "\n 1) Yes  2) No");
 
         int key;
 
@@ -67,7 +67,7 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public String getViewType() { return this.type; }
+    public String getViewType() { return type; }
 
     @Override
     public void close() {
@@ -75,111 +75,118 @@ public class ConsoleView implements IView
         System.out.flush();
     }
 
-    private void    drawMap() {
-        char[] buff = new char[controller.getSizeMap()];
-        Arrays.fill(buff, '.');
+    private void drawMap() {
+        char[] mapBuff = new char[controller.getSizeMap()];
+        Arrays.fill(mapBuff, '.');
 
         map.clear();
-        for (int i = 0; i < controller.getSizeMap(); i++)
-            map.add( buff.clone() );
+        for (int i = 0; i < controller.getSizeMap(); i++) {
+            map.add(mapBuff.clone());
+        }
 
         map.get(controller.getCharacter().getPosition().y)[controller.getCharacter().getPosition().x] = 'C';
-        for (Monster monster : controller.getMonsters())
+        for (Monster monster : controller.getMonsters()) {
             map.get(monster.getPosition().y)[monster.getPosition().x] = 'M';
+        }
 
-        numStat = 0;
+        numAttributes = 0;
         for (char[] str : map) {
-            System.out.println("     " + String.valueOf(str) + this.getStat(numStat++));
+            System.out.println("   " + String.valueOf(str) + getAttributes(numAttributes++));
         }
     }
 
     private int getValidValue() {
-        String str;
+        String inputString;
 
         while (true) {
-            str = "";
-            while (str.equals("")) {
+            inputString = EMPTY_STRING;
+            while (inputString.equals(EMPTY_STRING)) {
                 try {
-                    str = scanner.nextLine();
-                }
-                catch (Exception e) {
+                    inputString = scanner.nextLine();
+                } catch (Exception e) {
                     System.err.println("CTRL+D is bad!");
                     System.exit(0);
                 }
             }
-            if (str.equals(GUI_STR))
+            if (inputString.equals(GUI_STR)) {
                 return -2;
-            else if (!str.matches("^[0-9]+"))
-                System.err.println("Enter a valid value !");
-            else
+            } else if (!inputString.matches(DIGITS_PATTERN)) {
+                System.out.println("That's not a number!");
+            } else {
                 break;
+            }
         }
-        int value = -3;
-        switch (Integer.parseInt(str) ) {
+        int inputValue = -3;
+        switch (Integer.parseInt(inputString) ) {
             case NORTH:
-                value = 38;
+                inputValue = KEY_NORTH;
                 break;
             case WEST:
-                value = 37;
+                inputValue = KEY_WEST;
                 break;
             case EAST:
-                value = 39;
+                inputValue = KEY_EAST;
                 break;
             case SOUTH:
-                value = 40;
+                inputValue = KEY_SOUTH;
                 break;
             case EXIT:
-                controller.saveCharacter(); System.exit(0);
+                exit();
                 break;
-            case -2:
-                value = -2;
+            case GUI_SWITCH:
+                inputValue = GUI_SWITCH;
                 break;
         }
-        return value;
+        return inputValue;
     }
 
-    private String getStat(int numStat) {
+    private String getAttributes(int numAttributes) {
 
-        String stat = "       ";
+        String attributes = "    ";
 
-        switch (numStat) {
-            case 0:
-                stat += "Name: " + controller.getCharacter().getName();
+        switch (numAttributes) {
+            case NUM_ATTRIBUTES_NAME:
+                attributes += "Name: " + controller.getCharacter().getName();
                 break;
-            case 1:
-                stat += "Type: " + controller.getCharacter().getType();
+            case NUM_ATTRIBUTES_TYPE:
+                attributes += "Type: " + controller.getCharacter().getType();
                 break;
-            case 2:
-                stat += "Level: " + controller.getCharacter().getLevel();
+            case NUM_ATTRIBUTES_LEVEL:
+                attributes += "Level: " + controller.getCharacter().getLevel();
                 break;
-            case 3:
-                stat += "Location [" + controller.getCharacter().getPosition().x + ", "
+            case NUM_ATTRIBUTES_LOCATION:
+                attributes += "Location [" + controller.getCharacter().getPosition().x + ", "
                     + controller.getCharacter().getPosition().y + "]";
                 break;
-            case 4:
-                stat += "Exp: " + controller.getCharacter().getExp() + "/" +
+            case NUM_ATTRIBUTES_EXP:
+                attributes += "Exp: " + controller.getCharacter().getExp() + "/" +
                     controller.getCharacter().getNecessaryExp();
                 break;
-            case 5:
-                stat += "Attack: " + controller.getCharacter().getAttack();
+            case NUM_ATTRIBUTES_ATTACK:
+                attributes += "Attack: " + controller.getCharacter().getAttack();
                 break;
-            case 6:
-                stat += "Defense: " + controller.getCharacter().getDefense();
+            case NUM_ATTRIBUTES_DEFENSE:
+                attributes += "Defense: " + controller.getCharacter().getDefense();
                 break;
-            case 7:
-                stat += "Hp: " + controller.getCharacter().getHitP() + "/"
+            case NUM_ATTRIBUTES_HP:
+                attributes += "Hp: " + controller.getCharacter().getHitP() + "/"
                     + controller.getCharacter().getMaxHp();
                 break;
-            case 8:
-                if (controller.getCharacter().getArtefact() != null && !controller.getCharacter().getArtefact().getType().equals("") ) {
-                stat += "Artefact-" + controller.getCharacter().getArtefact().getType() + ": " +
+            case NUM_ATTRIBUTES_ARTEFACT:
+                if (controller.getCharacter().getArtefact() != null && !controller.getCharacter().getArtefact().getType().equals(EMPTY_STRING) ) {
+                attributes += "Artefact-" + controller.getCharacter().getArtefact().getType() + ": " +
                         controller.getCharacter().getArtefact().getValue();
                 }
                 break;
                 default:
-                    return "";
+                    return EMPTY_STRING;
         }
 
-        return stat;
+        return attributes;
+    }
+
+    private void exit() {
+        controller.saveCharacter();
+        System.exit(0);
     }
 }
