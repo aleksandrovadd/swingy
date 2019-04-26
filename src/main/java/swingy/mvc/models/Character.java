@@ -21,19 +21,14 @@ public class Character {
     private Point position;
     private Point previousPosition;
 
-    private Artifact artifact;
+    private Artefact artefact;
 
-    public Character() {
+    Character() {
         position = new Point(0, 0);
         previousPosition = new Point(0, 0);
     }
 
-    public String getInfo() {
-        return ("\n Type: " + type + "\n\n Level: " + level + "\n\n Exp: " + exp
-        + "\n\n Attack: " + attack + "\n\n Defense: " + defense + "\n\n Hit points: " + hitPoint);
-    }
-
-    public void move(int x, int y) {
+    public void changePosition(int x, int y) {
         previousPosition.setLocation(position.x, position.y);
         position.setLocation(position.x + x, position.y + y);
     }
@@ -42,26 +37,26 @@ public class Character {
         return (int)(level * 1000 + Math.pow(level - 1, 2) * 450);
     }
 
-    public void setHitPoint(int hp) {
-        if (hp < 0) {
+    public void setHitPoint(int hitP) {
+        if (hitP < 0) {
             hitPoint = 0;
-        } else if (hp > maxHp) {
+        } else if (hitP > maxHp) {
             hitPoint = maxHp;
         } else {
-            hitPoint = hp;
+            hitPoint = hitP;
         }
     }
 
     public int getFinalAttack() {
-        if (artifact != null && artifact.getType().equals(Constants.ATTACK_STR)) {
-            return ((attack + artifact.getValue()) << 2);
+        if (artefact != null && artefact.getType().equals(Constants.ATTACK_STR)) {
+            return ((attack + artefact.getValue()) * 4);
         }
-        return (attack << 2);
+        return (attack * 4);
     }
 
     public int getFinalDefense() {
-        if (artifact != null && artifact.getType().equals(Constants.DEFENSE_STR)) {
-            return (defense + artifact.getValue());
+        if (artefact != null && artefact.getType().equals(Constants.DEFENSE_STR)) {
+            return (defense + artefact.getValue());
         }
         return defense;
     }
@@ -75,16 +70,6 @@ public class Character {
 
         public Builder withType(String type) {
             character.setType(type);
-            return this;
-        }
-
-        public Builder withLevel(int level) {
-            character.setLevel(level);
-            return this;
-        }
-
-        public Builder withExp(int exp) {
-            character.setExp(exp);
             return this;
         }
 
@@ -154,8 +139,8 @@ public class Character {
         return previousPosition;
     }
 
-    public Artifact getArtifact() {
-        return artifact;
+    public Artefact getArtefact() {
+        return artefact;
     }
 
     public void setName(String name) {
@@ -190,11 +175,17 @@ public class Character {
         this.position = position;
     }
 
-    public void setPreviousPosition(Point previousPosition) {
-        this.previousPosition = previousPosition;
+//    public void setPreviousPosition(Point previousPosition) {
+//        this.previousPosition = previousPosition;
+//    }
+
+    public void setArtefact(Artefact artefact) {
+        this.artefact = artefact;
     }
 
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
+    @Override
+    public String toString() {
+        return ("\n Type: " + type + "\n\n Level: " + level + "\n\n Exp: " + exp
+                + "\n\n Attack: " + attack + "\n\n Defense: " + defense + "\n\n Hit points: " + hitPoint);
     }
 }

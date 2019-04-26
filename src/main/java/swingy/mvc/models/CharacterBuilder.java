@@ -18,7 +18,7 @@ public class CharacterBuilder {
         switch (type) {
             case WARRIOR_TYPE:
                 newCharacter = new Character.Builder()
-                        .withType(ROGUE_TYPE)
+                        .withType(WARRIOR_TYPE)
                         .withAttack(30)
                         .withDefense(80)
                         .withMaxHp(200)
@@ -27,7 +27,7 @@ public class CharacterBuilder {
                 break;
             case MAGE_TYPE:
                 newCharacter = new Character.Builder()
-                        .withType(ROGUE_TYPE)
+                        .withType(MAGE_TYPE)
                         .withAttack(40)
                         .withDefense(20)
                         .withMaxHp(150)
@@ -62,12 +62,12 @@ public class CharacterBuilder {
         return null;
     }
 
-    public Character buildByInfo(ResultSet info) throws Exception {
+    public static Character buildByInfo(ResultSet info) throws Exception {
         Character newCharacter = new Character();
 
         newCharacter.setName(info.getString("name"));
         newCharacter.setType(info.getString("type"));
-        newCharacter.setArtifact( new Artifact(info.getString("artifactT"), info.getInt("artifactV")) );
+        newCharacter.setArtefact(new Artefact(info.getString("artifactT"), info.getInt("artifactV")) );
         newCharacter.setAttack(info.getInt(ATTACK_STR) );
         newCharacter.setDefense(info.getInt(DEFENSE_STR));
         newCharacter.setExp(info.getInt("exp"));

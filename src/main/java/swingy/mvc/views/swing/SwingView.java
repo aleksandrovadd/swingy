@@ -66,7 +66,7 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public void drawGameObjects() {
+    public void drawObjects() {
         initScrolls();
         stats = new SwingStats(controller.getCharacter());
         stats.updateData();
@@ -80,7 +80,7 @@ public class SwingView extends JFrame implements IView
     }
 
     @Override
-    public void viewRepaint() {
+    public void reDraw() {
         panel.repaint();
     }
 
@@ -146,7 +146,7 @@ public class SwingView extends JFrame implements IView
         @Override
         public void keyPressed(KeyEvent e) {
             if (controller.getCharacter() != null) {
-                if ((e.getKeyCode() > 36 && e.getKeyCode() < 41)) {
+                if ((e.getKeyCode() >= 37 && e.getKeyCode() <= 40)) {
                     controller.keyPressed(e.getKeyCode());
                 }
                 else if (e.getKeyCode() == 49) {

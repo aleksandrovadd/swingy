@@ -24,7 +24,7 @@ public class MonsterBuilder {
             }
         }
         newMonster.setPosition(position);
-        setSkills(newMonster, character.getLevel() << 1);
+        setSkills(newMonster, character.getLevel() * 2);
 
         return newMonster;
     }

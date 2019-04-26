@@ -44,7 +44,7 @@ public class SwingMapPanel extends JPanel {
 
         g2.setColor(new Color(101, 255, 0, 75));
         g2.fillRect(controller.getCharacter().getPosition().x * sizeSquare, controller.getCharacter().getPosition().y * sizeSquare, sizeSquare, sizeSquare);
-        g2.drawImage(img, controller.getCharacter().getPosition().x * sizeSquare + (sizeSquare >> 2), controller.getCharacter().getPosition().y * sizeSquare, this);
+        g2.drawImage(img, controller.getCharacter().getPosition().x * sizeSquare + (sizeSquare / 4), controller.getCharacter().getPosition().y * sizeSquare, this);
     }
 
     private void drawEnemies(Graphics2D g2) {
@@ -55,7 +55,7 @@ public class SwingMapPanel extends JPanel {
             myimg = getToolkit().getImage("resources/characters/monster" + monster.getNumImg() + ".png");
 
             prepareImage(myimg, this);
-            g2.drawImage(myimg, monster.getPosition().x * sizeSquare + (sizeSquare >> 2), monster.getPosition().y * sizeSquare, this);
+            g2.drawImage(myimg, monster.getPosition().x * sizeSquare + (sizeSquare  / 4), monster.getPosition().y * sizeSquare, this);
         }
     }
 }

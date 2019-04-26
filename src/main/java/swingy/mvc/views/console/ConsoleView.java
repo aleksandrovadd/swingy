@@ -3,9 +3,10 @@ package swingy.mvc.views.console;
 import swingy.mvc.Controller;
 import swingy.mvc.models.Monster;
 import swingy.mvc.views.IView;
-import swingy.util.Constants;
 
 import java.util.*;
+
+import static swingy.util.Constants.*;
 
 public class ConsoleView implements IView
 {
@@ -20,7 +21,7 @@ public class ConsoleView implements IView
         scanner = new Scanner(System.in);
         map = new ArrayList<>();
         numStat = 0;
-        type = Constants.CONSOLE_STR;
+        type = CONSOLE_STR;
     }
 
     @Override
@@ -29,15 +30,16 @@ public class ConsoleView implements IView
     }
 
     @Override
-    public void drawGameObjects() {
+    public void drawObjects() {
         drawMap();
-        System.out.println("\n0) Exit\n\n     1) North\n2) West     3) East\n     4) South\n\"gui\" - for gui-mode");
+        System.out.println("\n0) " + EXIT_STR + "\n\n     1) " + NORTH_STR + "\n2) " + WEST_STR +
+                "     3) " + EAST_STR + "\n     4) " + SOUTH_STR + "\n " + GUI_STR + " - for gui-mode");
         controller.keyPressed(getValidValue());
     }
 
     @Override
-    public void viewRepaint(){
-        this.drawGameObjects();
+    public void reDraw(){
+        this.drawObjects();
     }
 
     @Override
@@ -105,7 +107,7 @@ public class ConsoleView implements IView
                     System.exit(0);
                 }
             }
-            if (str.equals(Constants.GUI_STR))
+            if (str.equals(GUI_STR))
                 return -2;
             else if (!str.matches("^[0-9]+"))
                 System.err.println("Enter a valid value !");
@@ -114,19 +116,19 @@ public class ConsoleView implements IView
         }
         int value = -3;
         switch (Integer.parseInt(str) ) {
-            case 1:
+            case NORTH:
                 value = 38;
                 break;
-            case 2:
+            case WEST:
                 value = 37;
                 break;
-            case 3:
+            case EAST:
                 value = 39;
                 break;
-            case 4:
+            case SOUTH:
                 value = 40;
                 break;
-            case 0:
+            case EXIT:
                 controller.saveCharacter(); System.exit(0);
                 break;
             case -2:
@@ -169,9 +171,9 @@ public class ConsoleView implements IView
                     + controller.getCharacter().getMaxHp();
                 break;
             case 8:
-                if (controller.getCharacter().getArtifact() != null && !controller.getCharacter().getArtifact().getType().equals("") ) {
-                stat += "Artifact-" + controller.getCharacter().getArtifact().getType() + ": " +
-                        controller.getCharacter().getArtifact().getValue();
+                if (controller.getCharacter().getArtefact() != null && !controller.getCharacter().getArtefact().getType().equals("") ) {
+                stat += "Artefact-" + controller.getCharacter().getArtefact().getType() + ": " +
+                        controller.getCharacter().getArtefact().getValue();
                 }
                 break;
                 default:

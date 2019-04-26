@@ -52,7 +52,7 @@ class SwingChooseCharacter {
     }
 
     Character ChooseCharacter() throws Exception {
-        DataBase.getDataBase().connectDb();
+        DataBase.getInstance().connectDatabase();
 
         prepareObjects();
         addObjOnFrame();
@@ -105,7 +105,7 @@ class SwingChooseCharacter {
                 }
         );
 
-        List<String> names = DataBase.getDataBase().getNames();
+        List<String> names = DataBase.getInstance().getNames();
         for (String name : names) {
             previousCharacters.addItem(name);
         }
@@ -114,7 +114,7 @@ class SwingChooseCharacter {
         previousCharacters.addItemListener(
                 (ItemEvent e) -> {
                     try {
-                        Character newCharacter = DataBase.getDataBase().getCharacter((String) previousCharacters.getSelectedItem() );
+                        Character newCharacter = DataBase.getInstance().selectCharacter((String) previousCharacters.getSelectedItem() );
                         if (newCharacter == null)
                             newCharacter = CharacterBuilder.buildByType((String) characterTypes.getSelectedItem() );
 
@@ -127,7 +127,7 @@ class SwingChooseCharacter {
                 }
         );
 
-        stats = new SwingStats(names.size() != 0 ? DataBase.getDataBase().getCharacter((String) previousCharacters.getSelectedItem()) :
+        stats = new SwingStats(names.size() != 0 ? DataBase.getInstance().selectCharacter((String) previousCharacters.getSelectedItem()) :
                 CharacterBuilder.buildByType((String) characterTypes.getSelectedItem()) );
         stats.setLocation(400, 400);
     }
@@ -185,7 +185,6 @@ class SwingChooseCharacter {
         File file = new File("resources/fonts/LeagueGothic-CondensedItalic.otf");
         try {
             fonts[0] = Font.createFont(Font.TRUETYPE_FONT, file).deriveFont(30f);
-//            this.fonts[1] = Font.createFont(Font.TRUETYPE_FONT, file1).deriveFont(20f);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -204,7 +203,7 @@ class SwingChooseCharacter {
             JOptionPane.showMessageDialog(panel, error);
         else {
             try {
-                DataBase.getDataBase().addNewCharacter(newCharacter);
+                DataBase.getInstance().insertCharacter(newCharacter);
                 previousCharacters.addItem(inputName.getText());
                 inputName.setText("");
             }
@@ -217,7 +216,7 @@ class SwingChooseCharacter {
     private void removeCharacter() {
         Object removeCharacter = previousCharacters.getSelectedItem();
         try {
-            DataBase.getDataBase().remove((String)removeCharacter);
+            DataBase.getInstance().deleteCharacter((String)removeCharacter);
             previousCharacters.removeItem(removeCharacter);
         }
         catch (Exception e) {
@@ -227,7 +226,7 @@ class SwingChooseCharacter {
 
     private void selectCharacter() {
         try {
-            selectedCharacter = DataBase.getDataBase().getCharacter((String) previousCharacters.getSelectedItem());
+            selectedCharacter = DataBase.getInstance().selectCharacter((String) previousCharacters.getSelectedItem());
         } catch (Exception e1) {
             e1.printStackTrace();
         }
