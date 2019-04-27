@@ -1,6 +1,5 @@
 package swingy.mvc.models;
 
-import swingy.mvc.Controller;
 import swingy.util.Constants;
 
 import javax.validation.constraints.Size;
@@ -8,65 +7,96 @@ import javax.validation.constraints.Pattern;
 import java.awt.*;
 
 public class Character {
-    @Pattern(regexp = "^[0-9A-Za-z]+", message = "Only digits and letters in name")
-    @Size(min = 3, max = 12, message = "Size of name must be 3-12 symbols length")
-    private String  name;
-    private String  type;
-    private int     level;
-    private int     exp;
-    private int     attack;
-    private int     defense;
-    private int     maxHp;
-    private int     hitP;
+    @Pattern(regexp = "^[0-9A-Za-z]+", message = "Only letters and digits in name")
+    @Size(min = 3, max = 12, message = "Length of name must be 3-12 symbols")
+    private String name;
+    private String type;
+    private int level = 1;
+    private int exp = 0;
+    private int attack;
+    private int defense;
+    private int maxHp;
+    private int hitPoint;
 
-    private Point   position;
+    private Point position;
     private Point previousPosition;
 
-    private Artifact artifact;
+    private Artefact artefact;
 
-    public Character() {
-        this.position = new Point(0, 0);
-        this.previousPosition = new Point(0, 0);
-        this.artifact = null;
+    Character() {
+        position = new Point(0, 0);
+        previousPosition = new Point(0, 0);
     }
 
-    public String getInfo() {
-        return ("\n Type: " + type + "\n\n Level: " + level + "\n\n Exp: " + exp
-        + "\n\n Attack: " + attack + "\n\n Defense: " + defense + "\n\n Hit points: " + hitP);
-    }
-
-    public void move(int x, int y) {
-        this.previousPosition.setLocation(this.position.x, this.position.y);
-        this.position.setLocation(this.position.x + x, this.position.y + y);
+    public void changePosition(int x, int y) {
+        previousPosition.setLocation(position.x, position.y);
+        position.setLocation(position.x + x, position.y + y);
     }
 
     public int getNecessaryExp() {
         return (int)(level * 1000 + Math.pow(level - 1, 2) * 450);
     }
 
-    public void setHitP(int hp) {
-        if (hp < 0) {
-            hitP = 0;
-        }
-        else if (hp > maxHp) {
-            hitP = maxHp;
+    public void setHitPoint(int hitP) {
+        if (hitP < 0) {
+            hitPoint = 0;
+        } else if (hitP > maxHp) {
+            hitPoint = maxHp;
         } else {
-            hitP = hp;
+            hitPoint = hitP;
         }
     }
 
     public int getFinalAttack() {
-        if (artifact != null && artifact.getType().equals(Constants.ATTACK_STR)) {
-            return ((attack + artifact.getValue()) << 2);
+        if (artefact != null && artefact.getType().equals(Constants.ATTACK_STR)) {
+            return ((attack + artefact.getValue()) * 4);
         }
-        return (attack << 2);
+        return (attack * 4);
     }
 
     public int getFinalDefense() {
-        if (artifact != null && artifact.getType().equals(Constants.DEFENSE_STR)) {
-            return (defense + artifact.getValue());
+        if (artefact != null && artefact.getType().equals(Constants.DEFENSE_STR)) {
+            return (defense + artefact.getValue());
         }
         return defense;
+    }
+
+    static class Builder {
+        private Character character;
+
+        Builder() {
+            character = new Character();
+        }
+
+        Builder withType(String type) {
+            character.setType(type);
+            return this;
+        }
+
+        Builder withAttack(int attack) {
+            character.setAttack(attack);
+            return this;
+        }
+
+        Builder withDefense(int defense) {
+            character.setDefense(defense);
+            return this;
+        }
+
+        Builder withMaxHp(int maxHp) {
+            character.setMaxHp(maxHp);
+            return this;
+        }
+
+        Builder withHitPoint(int hitPoint) {
+            character.setHitPoint(hitPoint);
+            return this;
+        }
+
+        Character build() {
+            return character;
+        }
+
     }
 
     public String getName() {
@@ -98,7 +128,7 @@ public class Character {
     }
 
     public int getHitP() {
-        return hitP;
+        return hitPoint;
     }
 
     public Point getPosition() {
@@ -109,8 +139,8 @@ public class Character {
         return previousPosition;
     }
 
-    public Artifact getArtifact() {
-        return artifact;
+    public Artefact getArtefact() {
+        return artefact;
     }
 
     public void setName(String name) {
@@ -145,11 +175,13 @@ public class Character {
         this.position = position;
     }
 
-    public void setPreviousPosition(Point previousPosition) {
-        this.previousPosition = previousPosition;
+    public void setArtefact(Artefact artefact) {
+        this.artefact = artefact;
     }
 
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
+    @Override
+    public String toString() {
+        return ("\n Type: " + type + "\n\n Level: " + level + "\n\n Exp: " + exp
+                + "\n\n Attack: " + attack + "\n\n Defense: " + defense + "\n\n Hit points: " + hitPoint);
     }
 }

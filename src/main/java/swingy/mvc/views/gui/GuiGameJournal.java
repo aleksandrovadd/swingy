@@ -1,14 +1,14 @@
-package swingy.mvc.views.swing;
+package swingy.mvc.views.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class SwingGameLog extends JTextArea {
+public class GuiGameJournal extends JTextArea {
     private Font font;
 
-    SwingGameLog() {
+    GuiGameJournal() {
         setLayout(null);
         setAutoscrolls(true);
         setBackground(Color.pink);
@@ -29,12 +29,12 @@ public class SwingGameLog extends JTextArea {
 
     @Override
     public void	append(String str) {
+        super.append(str);
         if (font == null) {
             loadFont();
             setFont(font);
         }
 
-        super.append(str);
         setRows(getRows() + 1);
     }
 }

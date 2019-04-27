@@ -4,80 +4,103 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import swingy.mvc.models.characterBuilder.CharacterBuilder;
+import swingy.mvc.models.CharacterBuilder;
 import swingy.mvc.models.Character;
 
 public class DataBase {
-    private static DataBase db = null;
 
-    private static Statement    statm;
-    private static ResultSet    info;
-    private final String        driverName;
-    private final String        connectionString;
-    private Connection          connection;
+    private static final String DRIVER_NAME = "org.sqlite.JDBC";
+    private static final String CONNECTION_STRING =  "jdbc:sqlite:../characters.db";
 
-    private DataBase() {
-        this.driverName  = "org.sqlite.JDBC";
-        this.connectionString = "jdbc:sqlite:../characters.db";
-        this.connection = null;
-    }
+    private static DataBase dataBase;
 
-    public static DataBase  getDb() {
-        if (db == null) {
-            db = new DataBase();
+    private static Statement statement;
+    private static ResultSet resultSet;
+
+    private Connection connection;
+
+    public static DataBase getInstance() {
+        if (dataBase == null) {
+            dataBase = new DataBase();
         }
-
-        return db;
+        return dataBase;
     }
 
-    public void connectDb() throws Exception {
+    public void connectDatabase() throws Exception {
         if (connection == null) {
-            Class.forName(driverName);
-            connection = DriverManager.getConnection(connectionString);
 
-            statm = this.connection.createStatement();
-            statm.execute("CREATE  TABLE if not EXISTS 'characters' ('name' text, 'type' text, 'level' INT, 'exp' INT," +
-                    "'attack' INT, 'defense' INT, 'hp' INT, 'maxHp' INT, 'artifactT' text, 'artifactV' INT);");
+            String createTable = "CREATE  TABLE if not EXISTS 'characters' ('name' text, 'type' text, 'level' INT, 'exp' INT," +
+                    "'attack' INT, 'defense' INT, 'hp' INT, 'maxHp' INT, 'artifactT' text, 'artifactV' INT);";
+
+            try {
+                Class.forName(DRIVER_NAME);
+                connection = DriverManager.getConnection(CONNECTION_STRING);
+                statement = connection.createStatement();
+                statement.execute(createTable);
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
         }
     }
 
-    public List<String> getNames() throws Exception {
-        info = statm.executeQuery("SELECT * FROM characters");
+    public List<String> getNames() {
         List<String> names = new ArrayList<>();
-                while (info.next()) {
-            names.add(info.getString("name"));
+        try {
+            String selectCharactersQuery = "SELECT * FROM characters";
+            resultSet = statement.executeQuery(selectCharactersQuery);
+            while (resultSet.next()) {
+                names.add(resultSet.getString("name"));
+            }
+        } catch(SQLException sqlEx) {
+            sqlEx.printStackTrace();
         }
         return names;
     }
 
-    public void addNewCharacter(Character newCharacter) throws Exception {
-        String artifactType = newCharacter.getArtifact() == null ? "" : newCharacter.getArtifact().getType();
-        int    artifactValue = artifactType == "" ? 0 : newCharacter.getArtifact().getValue();
+    public void insertCharacter(Character newCharacter) {
+        try {
+            String artifactType = newCharacter.getArtefact() == null ? "" : newCharacter.getArtefact().getType();
+            int artifactValue = artifactType.equals("") ? 0 : newCharacter.getArtefact().getValue();
 
-        String  requestAdd = "VALUES ('" + newCharacter.getName() + "', '" + newCharacter.getType() + "', " + newCharacter.getLevel() + "," +
-                newCharacter.getExp() + "," + newCharacter.getAttack() + "," + newCharacter.getDefense() + "," + newCharacter.getHitP() + ","
-                + newCharacter.getMaxHp() + ",'" + artifactType + "'," + artifactValue + ");";
+            String requestAdd = "VALUES ('" + newCharacter.getName() + "', '" + newCharacter.getType() + "', " + newCharacter.getLevel() + "," +
+                    newCharacter.getExp() + "," + newCharacter.getAttack() + "," + newCharacter.getDefense() + "," + newCharacter.getHitP() + ","
+                    + newCharacter.getMaxHp() + ",'" + artifactType + "'," + artifactValue + ");";
 
-        statm.execute("INSERT INTO 'characters' ('name', 'type', 'level', 'exp', 'attack', 'defense', 'hp', 'maxHP', 'artifactT', 'artifactV')" + requestAdd );
+            String insertQuery = "INSERT INTO 'characters' ('name', 'type', 'level', 'exp', 'attack', 'defense', 'hp', 'maxHP', 'artifactT', 'artifactV')";
+            statement.execute(insertQuery + requestAdd);
+        } catch(SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        }
     }
 
-    public void remove(String name) throws Exception {
-        statm.execute("DELETE FROM characters WHERE name = '" + name + "';");
+    public void deleteCharacter(String name) {
+        try {
+            String deleteQuery = "DELETE FROM characters WHERE name = '" + name + "';";
+            statement.execute(deleteQuery);
+        } catch(SQLException sqlEx) {
+            sqlEx.printStackTrace();
+        }
     }
 
-    public Character getCharacter(String name) throws Exception {
-        info = statm.executeQuery("SELECT * FROM characters where name = '" + name + "';");
-        return info.next() ? new CharacterBuilder().buildByInfo(info) : null;
+    public Character selectCharacter(String name) throws Exception {
+        try {
+            String selectQuery = "SELECT * FROM characters where name = '" + name + "';";
+            resultSet = statement.executeQuery(selectQuery);
+            return resultSet.next() ? CharacterBuilder.buildByInfo(resultSet) : null;
+        } catch(SQLException sqlEx) {
+            sqlEx.printStackTrace();
+            return null;
+        }
     }
 
     public void updateCharacter(Character character) {
         String request = "UPDATE characters SET level = " + character.getLevel() + ", exp = " + character.getExp() +
                 ", attack = " + character.getAttack() + ", defense = " + character.getDefense() + ", hp = " + character.getMaxHp() +
-                ", maxHp = " + character.getMaxHp() + ", artifactT = '" + ( character.getArtifact() == null ? "" : character.getArtifact().getType() ) +
-                "' , artifactV = " + character.getArtifact().getValue() + " WHERE name = '" + character.getName() + "';";
+                ", maxHp = " + character.getMaxHp() + ", artifactT = '" + ( character.getArtefact() == null ? "" : character.getArtefact().getType() ) +
+                "' , artifactV = " + character.getArtefact().getValue() + " WHERE name = '" + character.getName() + "';";
 
         try {
-            statm.execute(request);
+            statement.execute(request);
         } catch (SQLException e) {
             e.printStackTrace();
         }

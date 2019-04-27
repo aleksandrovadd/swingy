@@ -1,15 +1,14 @@
 package swingy.mvc.views;
 
-public interface IView
-{
-    public void ChooseCharacter() throws Exception;
-    public void drawGameObjects();
-    public void viewRepaint();
-    public void scrollPositionManager();
-    public void updateData();
-    public void addLog(String text);
+public interface IView {
+    void ChooseCharacter() throws Exception;
+    void drawObjects();
+    void reDraw();
+    void scrollPositionManager();
+    void updateData();
+    void addLog(String text);
 
-    public boolean simpleDialog(String message);
-    public String getViewType();
-    public void close();
+    boolean yesNoDialog(String message);
+    String getViewType();
+    void close();
 }
